@@ -10,4 +10,11 @@
     <ProjectReference Include="..\ExpenseManagement.Domain\ExpenseManagement.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Features\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
