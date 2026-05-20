@@ -23,3 +23,11 @@ bld/
 *.vsidx
 *.vspscc
 *.vssscc
+
+# User secrets
+**/appsettings.Development.json
+secrets.json
+
+# Local configuration
+appsettings.*.json
+!appsettings.json
