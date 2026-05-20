@@ -1,12 +1,14 @@
-﻿
-
-using ExpenseManagement.Application.DTOs;
+﻿using ExpenseManagement.Application.DTOs;
 using ExpenseManagement.Application.Interfaces;
 using ExpenseManagement.Domain.Entities;
 using ExpenseManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+
 
 namespace ExpenseManagement.Infrastructure.Services
 {
@@ -37,7 +39,11 @@ namespace ExpenseManagement.Infrastructure.Services
                 Email = registerDto.Email,
                 // Hash the password using BCrypt
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                Role = registerDto.Role
+                Role = registerDto.Role,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsActive = true,
+                Expenses = new List<Expense>()
             };
 
             // Add the new user to the database
@@ -78,12 +84,12 @@ namespace ExpenseManagement.Infrastructure.Services
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            var key = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(
-                    _configuration["Jwt:Key"]!));
+            var jwtKey = _configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT Key is not configured.");
 
-            var creds = new Microsoft.IdentityModel.Tokens.SigningCredentials(
-                key, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -95,7 +101,7 @@ namespace ExpenseManagement.Infrastructure.Services
 
             return new AuthResponseDto
             {
-                Token = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler().WriteToken(token),
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Email = user.Email,
                 Role = user.Role.ToString(),
                 ExpiresAt = token.ValidTo,
