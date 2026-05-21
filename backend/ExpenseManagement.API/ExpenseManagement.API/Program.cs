@@ -1,10 +1,11 @@
-using ExpenseManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using ExpenseManagement.Application.Interfaces;
+using ExpenseManagement.Infrastructure.Data;
 using ExpenseManagement.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-
+// Configure Entity Framework Core with SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register the authentication service for dependency injection
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
+// Configure JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -33,7 +37,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddSwaggerGen();
+// Define authorization policies based on user roles
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"))
+    .AddPolicy("EmployeeOnly", policy => policy.RequireRole("Employee"))
+    .AddPolicy("AdminOrManager", policy => policy.RequireRole("Admin", "Manager"))
+    .AddPolicy("AdminOrEmployee", policy => policy.RequireRole("Admin", "Employee"))
+    .AddPolicy("ManagerOrEmployee", policy => policy.RequireRole("Manager", "Employee"))
+    .AddPolicy("AdminManagerEmployee", policy => policy.RequireRole("Admin", "Manager", "Employee"));
+
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Expense Management API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT token like this: Bearer {your token}"
+    });
+
+});
 
 var app = builder.Build();
 
