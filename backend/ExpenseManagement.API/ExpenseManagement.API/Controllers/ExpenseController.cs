@@ -29,7 +29,7 @@ namespace ExpenseManagement.API.Controllers
             return Ok(expenses);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetExpenseById(int id)
         {
             var expense = await _expenseService.GetExpenseByIdAsync(id);
@@ -40,7 +40,7 @@ namespace ExpenseManagement.API.Controllers
             return Ok(expense);
         }
 
-        [HttpGet]
+        [HttpGet("user")]
         public async Task<IActionResult> GetUserExpenses()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
