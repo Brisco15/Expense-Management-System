@@ -82,6 +82,24 @@ namespace ExpenseManagement.Infrastructure.Services
                 ?? throw new Exception("Failed to create expense.");
         }
 
+        public async Task<List<ExpenseDto>> GetUserExpensesAsync(string userId)
+        {
+            var expenses = await _context.Expenses
+                            .Where(e => e.UserId.ToString() == userId)
+                            .Include(e => e.Category)
+                            .ToListAsync();
+            return expenses.Select(e => new ExpenseDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Amount = e.Amount,
+                ExpenseDate = e.ExpenseDate,
+                Status = e.Status.ToString(),
+                Description = e.Description,
+                Category = e.Category!.Name
+            }).ToList();
+        }
+
         public async Task<bool> DeleteExpenseAsync(int id)
         {
             var expense = await _context.Expenses.FindAsync(id);

@@ -6,6 +6,8 @@ namespace ExpenseManagement.Application.Interfaces
     {
         Task<List<ExpenseDto>> GetAllExpensesAsync();
         Task<ExpenseDto?> GetExpenseByIdAsync(int id);
+
+        Task<List<ExpenseDto>> GetUserExpensesAsync(string userId);
         Task<ExpenseDto> CreateExpenseAsync(
             CreateExpenseDto createExpenseDto,
             int userId
