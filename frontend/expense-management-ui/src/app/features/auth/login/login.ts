@@ -29,7 +29,7 @@ export class Login {
         [
           Validators.required,
           Validators.email,
-          Validators.pattern("/^[^@]+@[^@]+\.[^\s@]+$/")
+          
         ]
       ],
 
