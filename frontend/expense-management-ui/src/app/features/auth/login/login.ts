@@ -3,12 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { MaterialModule } from '../../../shared/material/material.module';
-import { NgIf } from "../../../../../node_modules/@angular/common/types/_common_module-chunk";
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MaterialModule, NgIf],
+  imports: [ReactiveFormsModule, MaterialModule, CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
