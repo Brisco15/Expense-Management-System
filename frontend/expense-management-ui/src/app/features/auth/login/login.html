@@ -1,6 +1,6 @@
 <div class="login-container">
     <mat-card class="login-card">
-        <h1>Expense Management</h1>
+        <h1> Expense Management System</h1>
         <p>Sign in to continue</p>
 
         <form [formGroup]="loginForm" (ngSubmit)="login()">
@@ -54,6 +54,7 @@
             @if(error()){
                 <p class="error-text">{{error()}}</p>
             }
+            
 
             <button
               mat-raised-button
@@ -69,7 +70,9 @@
               }
 
             </button>
+            <a routerLink="/auth/register" routerLinkActive="router-link-active">Don't have an account?Create account</a>
 
         </form>
+        
     </mat-card>
 </div>

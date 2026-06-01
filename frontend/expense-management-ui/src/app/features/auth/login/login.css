@@ -8,7 +8,7 @@
 
   align-items: center;
 
-  background: #f5f7fa;
+  background: #707d90;
 }
 
 .login-card {
@@ -27,6 +27,7 @@
 }
 
 h1 {
+  font-size: medium;
 
   text-align: center;
 

@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { CommonModule } from '@angular/common';
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MaterialModule, CommonModule],
+  imports: [ReactiveFormsModule, MaterialModule,RouterModule, CommonModule, RouterLinkActive],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

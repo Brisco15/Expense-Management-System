@@ -1,1 +1,100 @@
-<p>register works!</p>
+<div class="register-container">
+    <mat-card class="register-card">
+        <h1>Create an account</h1>
+        <p class="subtitle"> register to access the system</p>
+
+        <form [formGroup]="registerForm" (ngSubmit)="register()">
+            <!-- Fullname Field -->
+             <mat-form-field appearance="outline">
+                <mat-label>Full Name</mat-label>
+                <input matInput type="text" formControlName="fullName">
+
+                <mat-error *ngIf= "registerForm.controls.fullName.touched && 
+                registerForm.controls.fullName.invalid">
+                    Full name is required
+                
+                </mat-error>
+
+
+             </mat-form-field>
+            <!-- Email Field -->
+             <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email">
+
+                <mat-error *ngIf= "registerForm.controls.email.touched &&
+                 registerForm.controls.email.invalid">
+                    Please enter a valis email
+                </mat-error>
+
+             </mat-form-field>
+            <!-- Password Field -->
+             <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input matInput 
+                  [type]= "hidePassword() ? 'password' : 'text'" 
+                  formControlName="password">
+                  <button mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hidePassword.set(!hidePassword())">
+                    <mat-icon>
+                        {{ hidePassword() ? 'visibility_off' : 'visibility'}}
+                    </mat-icon>
+                  </button>
+                  <mat-error *ngIf= "registerForm.controls.password.touched && registerForm.controls.password.invalid">
+                      Please enter a valid password
+                  </mat-error>
+                  <mat-hint *ngIf= "registerForm.controls.password.dirty">
+                        Enter a password with at least 8 characters, min 1 uppercase letter, 1 lowercase letter, 1 digit and 1 special character
+                  </mat-hint>
+
+             </mat-form-field>
+            <!-- Confirm password Field Field -->
+             <mat-form-field appearance="outline">
+                <mat-label>Confirm password</mat-label>
+                <input matInput 
+                  [type]="hideConfirmPassword() ? 'password' : 'text'"
+                  formControlName="confirmPassword"
+                >
+                <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+                >
+                    <mat-icon>
+                        {{ hideConfirmPassword() ? 'visibility_off' : 'visibility'}}
+
+                    </mat-icon>
+                </button>
+
+             </mat-form-field>
+             @if(registerForm.errors?.['passwordMismatch']){
+                <p class="error-text">passwords do not match</p>
+             }
+
+             @if(error()){
+                <p class="error-text">{{ error() }}</p>
+             }
+        
+
+            <!-- Button submit -->
+            <button mat-raised-button
+              color="primary"
+              class="register-button"
+              type="submit"
+              [disabled]="loading()"
+            >
+
+            @if(loading()){
+              <mat-spinner diameter="20"></mat-spinner>
+            }@else {
+              Create Account
+           }
+
+           </button>
+
+           <a routerLink="/auth/login" routerLinkActive="router-link-active">Already have an account? Login</a>
+        </form>
+    </mat-card>
+</div>

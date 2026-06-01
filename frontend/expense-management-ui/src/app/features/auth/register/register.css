@@ -1,0 +1,65 @@
+.register-container {
+
+  height: 100vh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: #707d90;
+}
+
+.register-card {
+
+  width: 450px;
+
+  padding: 2rem;
+
+  border-radius: 16px;
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+h1 {
+
+  text-align: center;
+
+  margin-bottom: .5rem;
+}
+
+.subtitle {
+
+  text-align: center;
+
+  color: gray;
+
+  margin-bottom: 2rem;
+}
+
+form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1rem;
+}
+
+mat-form-field {
+
+  width: 100%;
+}
+
+.register-button {
+
+  height: 48px;
+}
+
+.error-text {
+
+  color: red;
+
+  text-align: center;
+}

@@ -28,6 +28,8 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
   }
 
+  
+
   saveUser(user: AuthResponse){
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSubject.next(user);
