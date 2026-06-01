@@ -37,9 +37,8 @@ namespace ExpenseManagement.Infrastructure.Services
             {
                 FullName = registerDto.FullName,
                 Email = registerDto.Email,
-                // Hash the password using BCrypt
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                Role = registerDto.Role,
+                Role = Domain.Enums.Role.Employee,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsActive = true,
