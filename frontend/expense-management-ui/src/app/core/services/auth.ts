@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environment';
 import { LoginRequest } from '../models/login.model';
 import { RegisterRequest } from '../models/register.model';
@@ -13,8 +12,12 @@ export class AuthService {
 
   private apiUrl = `${environment.apiUrl}/auth`;
 
-  private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
+  private userSignal = signal<AuthResponse | null>(null);
+  user = this.userSignal.asReadonly();
+ 
+  isLoggedIn = computed(() => !!this.user());
+
+  isAdmin = computed(()=> this.user()?.role === 'admin');
 
   constructor(private http: HttpClient){
     this.loadUserFromStorage();
@@ -32,12 +35,12 @@ export class AuthService {
 
   saveUser(user: AuthResponse){
     localStorage.setItem('user', JSON.stringify(user));
-    this.currentUserSubject.next(user);
+    this.userSignal.set(user);
   }
 
   logout(){
     localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
+    this.userSignal.set(null);
   }
 
   getToken(): string | null{
@@ -51,14 +54,10 @@ export class AuthService {
     return data ? JSON.parse(data) : null;
   }
 
-  isLoggedIn(): boolean{
-    return !!this.getToken();
-  }
-
   private loadUserFromStorage(){
     const user = this.getUser();
     if(user){
-      this.currentUserSubject.next(user);
+      this.userSignal.set(user);
     }
   }
 }
