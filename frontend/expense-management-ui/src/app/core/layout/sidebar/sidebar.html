@@ -1,1 +1,19 @@
-<p>sidebar works!</p>
+<mat-nav-list>
+    <a mat-list-item routerLinkActive="/dashboard">
+        Dashboard
+    </a>
+
+    <a mat-list-item routerLinkActive="/expenses">
+        Expenses
+    </a>
+
+    <a mat-list-item routerLinkActive="/categories">
+        Categories
+    </a>
+
+    @if(isAdmin()){
+        <a mat-list-item routerLinkActive="/users">
+            User Management
+        </a>
+    }
+</mat-nav-list>
