@@ -1,20 +1,19 @@
 <mat-nav-list>
-    <a mat-list-item routerLinkActive="/dashboard">
-
-        <mat-icon>dashboard</mat-icon> Dashboard
+    <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+        <mat-icon>dashboard</mat-icon> <span>Dashboard</span>
     </a>
 
-    <a mat-list-item routerLinkActive="/expenses">
-        <mat-icon>payments</mat-icon>  Expenses
+    <a mat-list-item routerLink="/expenses" routerLinkActive="active-link">
+        <mat-icon>payments</mat-icon>  <span>Expenses</span>
     </a>
 
-    <a mat-list-item routerLinkActive="/categories">
-        <mat-icon>category</mat-icon> Categories
+    <a mat-list-item routerLink="/categories" routerLinkActive="active-link">
+        <mat-icon>category</mat-icon> <span>Categories</span>
     </a>
 
     @if(isAdmin()){
-        <a mat-list-item routerLinkActive="/users">
-            <mat-icon>person</mat-icon> User Management
+        <a mat-list-item routerLink="/users" routerLinkActive="active-link">
+            <mat-icon>person</mat-icon> <span> User Management</span>
         </a>
     }
 </mat-nav-list>

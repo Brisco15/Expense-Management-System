@@ -1,1 +1,14 @@
-<p>main-layout works!</p>
+<app-navbar></app-navbar>
+<mat-sidenav-container class="layout-container">
+
+    <mat-sidenav mode="side" opened>
+        <app-sidebar></app-sidebar>
+
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

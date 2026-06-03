@@ -1,3 +1,38 @@
 .spacer {
-    flex: 1;
+  flex: 1;
+}
+
+mat-toolbar {
+  background: #0f172a !important;
+  color: #fff !important;
+  height: 64px;
+  padding: 0 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+mat-toolbar span:first-child {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+mat-toolbar button {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 0.875rem;
+  letter-spacing: 0.3px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+mat-toolbar button:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+mat-toolbar mat-icon {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 18px;
 }

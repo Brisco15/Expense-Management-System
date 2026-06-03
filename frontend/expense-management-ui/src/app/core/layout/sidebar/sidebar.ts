@@ -1,13 +1,13 @@
-import { Component, computed } from '@angular/core';
-import { RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { MaterialModule } from '../../../shared/material/material.module';
 
 @Component({
   selector: 'app-sidebar',
   imports: [
-    
     MaterialModule,
+    RouterLink,
     RouterLinkActive
 ],
   templateUrl: './sidebar.html',
@@ -15,9 +15,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
 })
 export class Sidebar {
 
-  constructor(
-    public authService: AuthService
-  ){}
+  private authService = inject(AuthService);
 
-  isAdmin = computed(()=> this.authService.isAdmin())
+  isAdmin = this.authService.isAdmin;
 }
