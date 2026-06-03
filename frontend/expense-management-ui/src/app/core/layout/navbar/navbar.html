@@ -1,1 +1,22 @@
-<p>navbar works!</p>
+<mat-toolbar>
+    <span>Expense Management</span>
+
+    <span class="spacer"></span>
+
+    <button mat-button [mat-menu-trigger-for]="userMenu" >
+        {{ authService.user()?.email }}
+        <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+            Profile
+        </button>
+
+        <button mat-menu-item (click)="logout()">
+            Logout
+        </button>
+
+    </mat-menu>
+
+</mat-toolbar>

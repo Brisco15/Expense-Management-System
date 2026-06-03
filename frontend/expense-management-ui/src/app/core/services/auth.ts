@@ -24,14 +24,12 @@ export class AuthService {
   }
 
   login(data: LoginRequest){
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data);
   }
 
   register(data: RegisterRequest){
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
   }
-
-  
 
   saveUser(user: AuthResponse){
     localStorage.setItem('user', JSON.stringify(user));

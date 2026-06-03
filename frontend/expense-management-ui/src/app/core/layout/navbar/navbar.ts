@@ -1,9 +1,23 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { MaterialModule } from '../../../shared/material/material.module';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [MaterialModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {}
+export class Navbar {
+
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ){}
+
+  logout(){
+    this.authService.logout();
+    this.router.navigateByUrl('/auth/login');
+  }
+}
