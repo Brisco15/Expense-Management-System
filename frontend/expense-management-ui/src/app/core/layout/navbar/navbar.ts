@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { AuthService } from '../../services/auth';
+import { ThemeService } from '../../services/theme';
 
 @Component({
   selector: 'app-navbar',
@@ -13,7 +14,8 @@ export class Navbar {
 
   constructor(
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ){}
 
   logout(){

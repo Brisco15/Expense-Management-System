@@ -3,12 +3,13 @@
 }
 
 mat-toolbar {
-  background: #0f172a !important;
-  color: #fff !important;
+  background: var(--shell-bg) !important;
+  color: var(--shell-text) !important;
   height: 64px;
   padding: 0 28px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid var(--shell-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.25s ease;
 }
 
 mat-toolbar span:first-child {
@@ -16,23 +17,23 @@ mat-toolbar span:first-child {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--shell-text);
 }
 
 mat-toolbar button {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--shell-text-muted) !important;
   font-size: 0.875rem;
   letter-spacing: 0.3px;
   border-radius: 6px;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 mat-toolbar button:hover {
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--shell-text) !important;
+  background: var(--shell-hover-bg) !important;
 }
 
 mat-toolbar mat-icon {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: var(--shell-text-muted) !important;
   font-size: 18px;
 }

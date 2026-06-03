@@ -3,6 +3,14 @@
 
     <span class="spacer"></span>
 
+    <button mat-icon-button (click)="themeService.toggleTheme()">
+        
+        <mat-icon>
+            {{ themeService.darkMode() ? 'light_mode' : 'dark_mode'}}
+        </mat-icon>
+
+    </button>
+
     <button mat-button [mat-menu-trigger-for]="userMenu" >
         {{ authService.user()?.email }}
         <mat-icon>arrow_drop_down</mat-icon>

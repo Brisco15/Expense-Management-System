@@ -4,17 +4,20 @@
 
 mat-sidenav {
   width: 248px;
-  background: #0f172a;
-  border-right: none;
-  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
-  color: #ffffff;
+  background: var(--shell-bg);
+  border-right: 1px solid var(--shell-border);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.25s ease;
 }
 
+
 mat-sidenav-content {
-  background: #f1f3f6;
+  background: var(--bg-color);
+  transition: background-color 0.25s ease;
 }
 
 .content {
   padding: 32px;
   max-width: 1200px;
 }
+  
