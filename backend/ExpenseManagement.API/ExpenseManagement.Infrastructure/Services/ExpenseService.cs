@@ -100,6 +100,22 @@ namespace ExpenseManagement.Infrastructure.Services
             }).ToList();
         }
 
+        public async Task<ExpenseDto> UpdateExpenseAsync(ExpenseDto updateExpenseDto, int userId)
+        {
+            var expense = await _context.Expenses.FindAsync(updateExpenseDto.Id);
+            if (expense == null) { throw new Exception("Expense not found."); }
+            if (expense.UserId != userId) { throw new Exception("Unauthorized to update this expense."); }
+            expense.Title = updateExpenseDto.Title;
+            expense.Amount = updateExpenseDto.Amount;
+            expense.ExpenseDate = updateExpenseDto.ExpenseDate;
+            expense.Description = updateExpenseDto.Description;
+            // Assuming Category is not updated here for simplicity
+            _context.Expenses.Update(expense);
+            await _context.SaveChangesAsync();
+            return await GetExpenseByIdAsync(expense.Id)
+                ?? throw new Exception("Failed to update expense.");
+        }
+
         public async Task<bool> DeleteExpenseAsync(int id)
         {
             var expense = await _context.Expenses.FindAsync(id);

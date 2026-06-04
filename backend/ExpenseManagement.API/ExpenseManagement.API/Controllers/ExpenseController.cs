@@ -66,6 +66,20 @@ namespace ExpenseManagement.API.Controllers
             return Ok(expense);
         }
 
+        [HttpPut("user")]
+        public async Task<IActionResult> Update(ExpenseDto updateExpenseDto)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var expense = await _expenseService.UpdateExpenseAsync(updateExpenseDto, userId);
+
+            if (expense == null)
+            {
+                return NotFound("Failed to update expense.");
+            }
+
+            return Ok(expense);
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)

@@ -12,6 +12,10 @@ namespace ExpenseManagement.Application.Interfaces
             CreateExpenseDto createExpenseDto,
             int userId
             );
+
+        Task<ExpenseDto> UpdateExpenseAsync(ExpenseDto updateExpenseDto,
+            int userId
+            );
         Task<bool> DeleteExpenseAsync(int id);
     }
 }
