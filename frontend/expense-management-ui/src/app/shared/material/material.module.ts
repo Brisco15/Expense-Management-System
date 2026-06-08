@@ -12,6 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule} from "@angular/material/progress-spinner"
+import { MatSelectModule } from "@angular/material/select";
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { MatProgressSpinnerModule} from "@angular/material/progress-spinner"
         MatProgressSpinnerModule,
         MatCardModule,
         MatMenuModule,
-        MatDividerModule
+        MatDividerModule,
+        MatSelectModule
     ]
 })
 
