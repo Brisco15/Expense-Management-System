@@ -4,13 +4,15 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { jwtInterceptor } from './core/interceptors/jwt-interceptor';
-//import { provideAnimations } from '@angular/platform-browser/animations'
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([jwtInterceptor])),
-    //provideAnimations()
+    provideCharts(withDefaultRegisterables()),
+    provideAnimationsAsync()
   ]
 };

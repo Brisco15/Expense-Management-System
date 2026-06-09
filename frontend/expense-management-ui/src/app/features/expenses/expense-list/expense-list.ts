@@ -38,13 +38,16 @@ export class ExpenseList implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   private expenseService = inject(ExpenseService);
-  categories: any;
+  categories = signal<{ id: string; name: string }[]>([]);
 
   ngOnInit(): void {
     this.loading.set(true);
     this.expenseService.getAllExpenses().subscribe({
       next: expenses => {
         this.dataSource.data = expenses;
+        const unique = [...new Set(expenses.map(e => e.category))]
+          .map(name => ({ id: name, name }));
+        this.categories.set(unique);
         this.loading.set(false);
         this.error.set('');
       },

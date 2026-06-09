@@ -1,0 +1,78 @@
+/* Filters Row */
+.search-box-container,
+.category-filter-container {
+  display: inline-block;
+  margin-bottom: 8px;
+  margin-right: 16px;
+}
+
+.search-box-container mat-form-field,
+.category-filter-container mat-form-field {
+  width: 240px;
+}
+
+/* Table Container */
+.table-container {
+  background: var(--card-color, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+/* Table */
+table {
+  width: 100%;
+}
+
+/* Header */
+th.mat-header-cell {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  background: var(--card-color, #ffffff);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--shell-border, rgba(0, 0, 0, 0.08));
+  white-space: nowrap;
+}
+
+/* Cells */
+td.mat-cell {
+  font-size: 0.875rem;
+  color: var(--text-color, #1e293b);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--shell-border, rgba(0, 0, 0, 0.08));
+}
+
+/* Row hover */
+tr.mat-row:hover td.mat-cell {
+  background: var(--shell-hover-bg, rgba(0, 0, 0, 0.03));
+}
+
+/* Amount column */
+td[mat-cell].mat-column-amount {
+  font-weight: 600;
+}
+
+/* Status badge */
+td[mat-cell].mat-column-status span {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Actions column */
+td[mat-cell].mat-column-actions {
+  white-space: nowrap;
+}
+
+/* Paginator */
+mat-paginator {
+  border-top: 1px solid var(--shell-border, rgba(0, 0, 0, 0.08));
+  background: var(--card-color, #ffffff);
+  color: var(--text-color, #1e293b);
+  border-radius: 0 0 12px 12px;
+}
