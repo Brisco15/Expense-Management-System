@@ -75,6 +75,21 @@ export class ExpenseList implements OnInit {
 
     this.dataSource.filter = category.toLocaleLowerCase();
   }
+  
+  //TODO
+  addExpense(){
+
+  }
+
+  //TODO
+  editExpense(id: number){
+
+  }
+
+  //TODO
+  deleteExpense(id: number){
+
+  }
 
 
 }

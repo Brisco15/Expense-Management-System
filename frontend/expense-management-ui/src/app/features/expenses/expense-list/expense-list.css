@@ -1,14 +1,45 @@
-/* Filters Row */
+/* Toolbar Row */
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin-bottom: 16px;
+}
+
 .search-box-container,
 .category-filter-container {
   display: inline-block;
   margin-bottom: 8px;
-  margin-right: 16px;
 }
 
 .search-box-container mat-form-field,
 .category-filter-container mat-form-field {
   width: 240px;
+}
+
+/* New Expense Button */
+.new-expense-container {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.new-expense-container button {
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.3px;
+  padding: 0 20px;
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.new-expense-container button:hover {
+  background-color: #15803d !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
 
 /* Table Container */
@@ -67,6 +98,12 @@ td[mat-cell].mat-column-status span {
 /* Actions column */
 td[mat-cell].mat-column-actions {
   white-space: nowrap;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 /* Paginator */
