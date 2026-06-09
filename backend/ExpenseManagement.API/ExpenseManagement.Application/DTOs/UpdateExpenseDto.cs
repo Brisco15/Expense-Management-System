@@ -1,7 +1,10 @@
-﻿namespace ExpenseManagement.Application.DTOs
+﻿
+
+namespace ExpenseManagement.Application.DTOs
 {
-    public class CreateExpenseDto
+    public class UpdateExpenseDto
     {
+        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public decimal Amount { get; set; } = decimal.Zero;
         public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;

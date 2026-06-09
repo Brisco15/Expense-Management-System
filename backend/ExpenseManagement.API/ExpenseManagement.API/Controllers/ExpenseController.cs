@@ -52,23 +52,115 @@ namespace ExpenseManagement.API.Controllers
             return Ok(expenses);
         }
 
+        [HttpGet("category/{categoryId}")]
+        public async Task<IActionResult> GetExpensesByCategory(int categoryId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var expenses = await _expenseService.GetExpensesByCategoryAsync(categoryId, userId);
+            if (expenses == null || !expenses.Any())
+            {
+                return NotFound($"No expenses found for category ID {categoryId}.");
+            }
+            return Ok(expenses);
+        }
+
+        [HttpGet("budget")]
+        public async Task<IActionResult> GetBudgetOverview()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var budgetOverview = await _expenseService.GetBudgetOverviewAsync(userId);
+            if (budgetOverview == null)
+            {
+                return NotFound("No budget overview found for the user.");
+            }
+            return Ok(budgetOverview);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Create(CreateExpenseDto createExpenseDto)
+        public async Task<IActionResult> Create([FromBody] CreateExpenseDto createExpenseDto)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var expense = await _expenseService.CreateExpenseAsync(createExpenseDto, userId);
 
             if (expense == null)
             {
-                return NotFound("Failed to create expense.");
+                return BadRequest("Failed to create expense.");
             }
 
             return Ok(expense);
         }
 
-        [HttpPut("user")]
-        public async Task<IActionResult> Update(ExpenseDto updateExpenseDto)
+        [HttpPost("{id}/receipt")]
+        public async Task<IActionResult> UploadReceipt(int id, IFormFile receipt)
         {
+            if (receipt == null || receipt.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
+            var fileExtension = Path.GetExtension(receipt.FileName).ToLowerInvariant();
+            
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest("Invalid file type. Only JPG, JPEG, PNG, and PDF files are allowed.");
+            }
+            // Validate file size  max 5MB
+            if (receipt.Length > 5 * 1024 * 1024)
+            {
+                return BadRequest("File size exceeds the limit of 5MB.");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+
+
+            var result = await _expenseService.UploadReceiptAsync(id, receipt, userId);
+            if (result == null)
+            {
+                return NotFound($"Expense with ID {id} not found or failed to upload receipt.");
+            }
+            return Ok(new { receiptPath = result });
+        }
+
+        [HttpPost("{id}/approve")]
+        
+        public async Task<IActionResult> ApproveExpense(int id, [FromBody] ApproveExpenseDto approveExpenseDto)
+        {
+            if(id != approveExpenseDto.ExpenseId)
+            {
+                return BadRequest("Expense ID mismatch.");
+            }
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var expense = await _expenseService.ApproveExpenseAsync(approveExpenseDto, userId);
+            if (expense == null)
+            {
+                return NotFound("Failed to approve/reject expense.");
+            }
+            return Ok(expense);
+        }
+
+        [HttpGet("pending")]
+        
+        public async Task<IActionResult> GetPendingExpenses()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var expenses = await _expenseService.GetPendingExpensesAsync(userId);
+            if (expenses == null || !expenses.Any())
+            {
+                return NotFound("No pending expenses found.");
+            }
+            return Ok(expenses);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateExpenseDto updateExpenseDto)
+        {
+            if(id != updateExpenseDto.Id)
+            {
+                return BadRequest("Expense ID mismatch.");
+            }
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var expense = await _expenseService.UpdateExpenseAsync(updateExpenseDto, userId);
 
@@ -88,6 +180,18 @@ namespace ExpenseManagement.API.Controllers
             if (!result)
             {
                 return NotFound($"Expense with ID {id} not found.");
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/receipt")]
+        public async Task<IActionResult> DeleteReceipt(int id)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await _expenseService.DeleteReceiptAsync(id, userId);
+            if (!result)
+            {
+                return NotFound($"Receipt for expense with ID {id} not found.");
             }
             return NoContent();
         }

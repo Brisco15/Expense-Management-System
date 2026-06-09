@@ -9,9 +9,21 @@ namespace ExpenseManagement.Application.DTOs
         public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;
         public string? Description { get; set; }
         public string Category { get; set; } = string.Empty;
-        
-        public string Status { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
 
-        public string User { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = string.Empty;
+        public int CreatedByUserId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public string? ReceiptPath { get; set; }
+        public string? ReceiptFileName { get; set; }
+        public bool HasReceipt {  get; set; }
+
+        public string? ApprovedBy { get; set; }
+        public DateTime? ApprovedAt { get; set; }
+        public string? RejectionReason { get; set; }
+
+        
     }
 }
