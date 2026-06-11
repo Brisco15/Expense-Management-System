@@ -23,13 +23,14 @@ namespace ExpenseManagement.Infrastructure.Data
                 entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PasswordHash).IsRequired();
-
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
             modelBuilder.Entity<Expense>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Amount).HasPrecision(18, 2);
 
                 // Creator relationship: User -> Expenses (one-to-many)
                 entity.HasOne(e => e.User)
@@ -49,6 +50,8 @@ namespace ExpenseManagement.Infrastructure.Data
             {
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
+                entity.Property(c => c.MonthlyBudget).HasPrecision(18, 2);
+                entity.Property(c => c.YearlyBudget).HasPrecision(18, 2);
             });
         }
     }
