@@ -116,7 +116,7 @@ namespace ExpenseManagement.API.Controllers
 
 
 
-            var result = await _expenseService.UploadReceiptAsync(id, receipt, userId);
+            var result = await _expenseService.UploadReceiptAsync(id, receipt.OpenReadStream(), receipt.FileName, userId);
             if (result == null)
             {
                 return NotFound($"Expense with ID {id} not found or failed to upload receipt.");
@@ -125,7 +125,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpPost("{id}/approve")]
-        
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> ApproveExpense(int id, [FromBody] ApproveExpenseDto approveExpenseDto)
         {
             if(id != approveExpenseDto.ExpenseId)
@@ -142,7 +142,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpGet("pending")]
-        
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> GetPendingExpenses()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -173,7 +173,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _expenseService.DeleteExpenseAsync(id);

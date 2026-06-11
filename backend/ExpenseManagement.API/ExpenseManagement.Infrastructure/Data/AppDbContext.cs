@@ -27,6 +27,29 @@ namespace ExpenseManagement.Infrastructure.Data
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
+            modelBuilder.Entity<Expense>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Creator relationship: User -> Expenses (one-to-many)
+                entity.HasOne(e => e.User)
+                      .WithMany(u => u.Expenses)
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Approver relationship: Expense -> ApprovedBy (many-to-one)
+                // No navigation collection on User for approved expenses, configure explicitly.
+                entity.HasOne(e => e.ApprovedBy)
+                      .WithMany(u => u.ApprovedExpenses) 
+                      .HasForeignKey(e => e.ApprovedByUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(c => c.Id);
+                entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
+            });
         }
     }
 }

@@ -8,12 +8,13 @@ namespace ExpenseManagement.Application.DTOs
         public string CategoryName { get; set; } = string.Empty;
         public decimal? MonthlyBudget { get; set; }
         public decimal MonthlyExpense { get; set; }
-        public decimal ? RemainingBudget => MonthlyBudget.HasValue ? MonthlyBudget - MonthlyExpense : (decimal?)null;
+        public decimal? RemainingMonthlyBudget { get; set; }
         public decimal? YearlyBudget { get; set; }
         public decimal YearlyExpense { get; set; }
-        public decimal ? RemainingYearlyBudget => YearlyBudget.HasValue ? YearlyBudget - YearlyExpense : (decimal?)null;
+        public decimal? RemainingYearlyBudget { get; set; }
 
-        public bool IsOverBudget => (MonthlyBudget.HasValue && MonthlyExpense > MonthlyBudget) || (YearlyBudget.HasValue && YearlyExpense > YearlyBudget);
+        public bool? IsMonthlyOverBudget  {get; set;}
+        public bool? IsYearlyOverBudget  {get; set;}
         public int PendingExpensesCount { get; set; }
         public int ApprovedExpensesCount { get; set; }
         public decimal PendingExpensesAmount { get; set; }

@@ -1,5 +1,5 @@
 ﻿using ExpenseManagement.Application.DTOs;
-using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace ExpenseManagement.Application.Interfaces
 {
@@ -12,7 +12,7 @@ namespace ExpenseManagement.Application.Interfaces
 
         Task<ExpenseDto> UpdateExpenseAsync(UpdateExpenseDto updateExpenseDto,int userId);
         
-        Task<string?> UploadReceiptAsync(int id, IFormFile receipt, int userId);
+        Task<string?> UploadReceiptAsync(int id, Stream receiptStream, string fileName,int userId);
 
         Task<List<ExpenseDto>> GetExpensesByCategoryAsync(int categoryId, int userId);
         Task<List<ExpenseDto>> GetPendingExpensesAsync(int userId);

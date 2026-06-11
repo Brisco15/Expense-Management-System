@@ -13,6 +13,7 @@ namespace ExpenseManagement.Domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
         public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+        public ICollection<Expense> ApprovedExpenses { get; set; } = new List<Expense>();
 
     }
 }
