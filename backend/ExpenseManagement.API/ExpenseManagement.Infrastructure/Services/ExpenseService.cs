@@ -33,7 +33,7 @@ namespace ExpenseManagement.Infrastructure.Services
                 Amount = expense.Amount,
                 ExpenseDate = expense.ExpenseDate,
                 Description = expense.Description,
-                Status = expense.Status.ToString(),
+                Status = expense.Status,
                 Category = expense.Category?.Name ?? string.Empty,
                 CategoryId = expense.CategoryId,
                 CreatedBy = expense.User?.FullName ?? string.Empty,
