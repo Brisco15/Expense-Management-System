@@ -1,4 +1,6 @@
 ﻿
+using ExpenseManagement.Domain.Enums;
+
 namespace ExpenseManagement.Application.DTOs
 {
     public class ExpenseDto
@@ -11,7 +13,7 @@ namespace ExpenseManagement.Application.DTOs
         public string Category { get; set; } = string.Empty;
         public int CategoryId { get; set; }
 
-        public string Status { get; set; } = string.Empty;
+        public ExpenseStatus Status { get; set; } = ExpenseStatus.Pending;
         public string CreatedBy { get; set; } = string.Empty;
         public int CreatedByUserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

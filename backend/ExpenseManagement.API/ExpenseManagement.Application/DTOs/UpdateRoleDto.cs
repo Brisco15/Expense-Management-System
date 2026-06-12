@@ -1,8 +1,13 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using ExpenseManagement.Domain.Enums;
+
 namespace ExpenseManagement.Application.DTOs
 {
     public class UpdateRoleDto
     {
-        public string Role { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Role is required.")]
+        
+        public Role Role { get; set; } = Role.Employee;
     }
 }

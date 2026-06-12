@@ -12,17 +12,17 @@ namespace ExpenseManagement.Infrastructure.Services
     // retrieving user information, updating roles, and deleting users
     public class UserService : IUserService
     {
-        public readonly AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public UserService(AppDbContext context)
         {
             _context = context;
         }
 
-        // Retrieve a list of all users in the system and return them as UserDto objects
         public async Task<List<UserDto>> GetAllUsersAsync()
         {
             return await _context.Users
+                .OrderByDescending(u => u.CreatedAt)
                 .Select(u => new UserDto
                 {
                     Id = u.Id,
@@ -36,49 +36,104 @@ namespace ExpenseManagement.Infrastructure.Services
                 .ToListAsync();
         }
 
-        // Retrieve a specific user by their ID and return it as a UserDto object
+        
         public async Task<UserDto?> GetUserByIdAsync(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return null;
-            return new UserDto
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email,
-                Role = user.Role.ToString(),
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt,
-                IsActive = user.IsActive
-            };
+            return await _context.Users
+               .Where(u => u.Id == id)
+               .Select(u => new UserDto
+               {
+                   Id = u.Id,
+                   FullName = u.FullName,
+                   Email = u.Email,
+                   Role = u.Role.ToString(),
+                   CreatedAt = u.CreatedAt,
+                   UpdatedAt = u.UpdatedAt,
+                   IsActive = u.IsActive
+               })
+               .FirstOrDefaultAsync();
         }
 
-        // Update the role of a user identified by their ID. The new role is provided as a string.
-        public async Task<bool> UpdateUserRoleAsync(int userId, string role)
+       
+        public async Task<bool> UpdateUserRoleAsync(int userId, Role role)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return false;
 
-            if (role == null) return false;
+            if (user.Role == role)
+                return true;
 
-            if (!Enum.TryParse<Role>(role, out var newRole)) return false;
-
-            user.Role = newRole;
+            user.Role = role;
             user.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return true;
 
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+            
         }
 
-        // Delete a user from the system based on their ID.
-        // Returns true if the deletion was successful, false otherwise.
+        public async Task<bool> UpdateUserStatusAsync(int userId, bool isActive)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return false;
+
+            if (user.IsActive == isActive) return true;
+
+             user.UpdatedAt = DateTime.UtcNow;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            } 
+            
+        }
+        
         public async Task<bool> DeleteUserAsync(int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users
+                .Include(u => u.Expenses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
             if (user == null) return false;
+
+            if (user.Expenses.Any())
+            {
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.UtcNow;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateException)
+                {
+                    return false;
+                }
+
+            }
+
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-            return true;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+
         }
     }
 }
