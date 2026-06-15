@@ -14,7 +14,8 @@ import { MaterialModule } from '../../../shared/material/material.module';
     MaterialModule,
     MatSort,
     MatSortHeader,
-    MatPaginator
+    MatPaginator,
+    
 ],
   templateUrl: './expense-list.html',
   styleUrl: './expense-list.css',
@@ -49,7 +50,7 @@ export class ExpenseList implements OnInit {
           .map(name => ({ id: name, name }));
         this.categories.set(unique);
         this.loading.set(false);
-        this.error.set('');
+        
       },
       error: ()=> {
         this.error.set('Failed to load Expense list');
