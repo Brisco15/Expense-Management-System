@@ -47,13 +47,17 @@ namespace ExpenseManagement.API.Controllers
         [HttpPut("{id}/role")]
         public async Task<IActionResult> UpdateRole(int id, [FromBody] UpdateRoleDto updateRoleDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var result = await _userService.UpdateUserRoleAsync(id, updateRoleDto.Role);
             if (!result)
             {
                 return NotFound($"User with ID {id} not found or invalid role.");
             }
-            return Ok(new { Message = "Role updated successfully", userId = id });
+            return Ok(new { message = "Role updated successfully", userId = id });
         }
 
         [HttpPut("{id}/status")]
@@ -67,7 +71,7 @@ namespace ExpenseManagement.API.Controllers
 
             return Ok(new
             {
-                message = updateUserStatusDto.IsActive ? "User activated" : "User desactivated",
+                message = updateUserStatusDto.IsActive ? "User activated" : "User deactivated",
                 userId = id
             });
         }

@@ -84,6 +84,7 @@ namespace ExpenseManagement.Infrastructure.Services
             if (user == null) return false;
 
             if (user.IsActive == isActive) return true;
+            user.IsActive = isActive;
 
              user.UpdatedAt = DateTime.UtcNow;
             try
