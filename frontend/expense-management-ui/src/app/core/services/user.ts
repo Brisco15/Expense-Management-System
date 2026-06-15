@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environment';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../models/user.model';
+import { Observable } from 'rxjs';
+import { User, UpdateUserRoleDto, UpdateUserStatusDto } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,19 +14,23 @@ export class UserService {
     private http: HttpClient,
   ){}
 
-  getAllUsers(){
+  getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
 
-  getUser(id: number){
+  getUserById(id: number): Observable<User>{
     return this.http.get<User>(`${this.apiUrl}/${id}`)
   }
 
-  // updateUser(id: number, ){
-  //   return this.http.put<User>(`${this.apiUrl}/${id}/role`)
-  // }
+  updateUserRole(id: number, dto: UpdateUserRoleDto ): Observable<any>{
+    return this.http.put<User>(`${this.apiUrl}/${id}/role`, dto)
+  }
 
-  deleteUser(id: number){
+  updateUserStatus(id: number, dto: UpdateUserStatusDto): Observable<any>{
+    return this.http.put<User>(`${this.apiUrl}/${id}/status`, dto)
+  }
+
+  deleteUser(id: number): Observable<void>{
     return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
 }

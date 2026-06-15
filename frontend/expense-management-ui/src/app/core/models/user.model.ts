@@ -10,3 +10,11 @@ export interface User {
     updatedAt: string;
 
 }
+
+export interface UpdateUserRoleDto {
+    role: UserRole;
+}
+
+export interface UpdateUserStatusDto {
+    isActive: boolean;
+}
