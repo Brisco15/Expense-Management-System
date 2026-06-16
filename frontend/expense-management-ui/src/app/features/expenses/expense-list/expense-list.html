@@ -42,6 +42,13 @@
 
 <!-- Expense table -->
 <div class="table-container">
+     @if (loading()) {
+      <mat-progress-spinner mode="indeterminate" diameter="40" />
+    } @else {
+
+    @if (error()) {
+      <p class="error-message">{{ error() }}</p>
+    }
     <table mat-table [dataSource]="dataSource" matSort>
         <!-- title column -->
         <ng-container matColumnDef="title">
@@ -133,10 +140,10 @@
         </tr>
      
     </table>
-
+    }
     <!-- Paginator -->
     <mat-paginator
-      [pageSize]="10"
+      [pageSize]="5"
       [pageSizeOptions]="[5,10,15]"
       showFirstLastButtons
     >

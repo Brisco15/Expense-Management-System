@@ -13,6 +13,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule} from "@angular/material/progress-spinner"
 import { MatSelectModule } from "@angular/material/select";
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -30,7 +33,10 @@ import { MatSelectModule } from "@angular/material/select";
         MatCardModule,
         MatMenuModule,
         MatDividerModule,
-        MatSelectModule
+        MatSelectModule,
+        MatButtonToggleModule,
+        MatSortModule,
+        MatPaginatorModule
     ]
 })
 
