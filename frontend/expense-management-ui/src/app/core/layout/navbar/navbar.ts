@@ -4,6 +4,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
 import { AuthService } from '../../services/auth';
 import { ThemeService } from '../../services/theme';
 
+
 @Component({
   selector: 'app-navbar',
   imports: [MaterialModule],
@@ -14,10 +15,12 @@ export class Navbar {
 
   constructor(
     public authService: AuthService,
+    
+
     private router: Router,
     public themeService: ThemeService
   ){}
-
+  
   logout(){
     this.authService.logout();
     this.router.navigateByUrl('/auth/login');
