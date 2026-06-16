@@ -41,7 +41,7 @@ table {
 }
 
 /* Header cells */
-.mat-mdc-header-cell {
+mat-mdc-header-cell {
   font-weight: 600;
   font-size: 0.8rem;
   text-transform: uppercase;

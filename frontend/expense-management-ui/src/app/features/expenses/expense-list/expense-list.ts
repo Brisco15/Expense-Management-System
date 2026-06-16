@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, OnInit, ViewChild, signal, inject } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -20,7 +20,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
   templateUrl: './expense-list.html',
   styleUrl: './expense-list.css',
 })
-export class ExpenseList implements OnInit { 
+export class ExpenseList implements OnInit, AfterViewInit { 
 
   displayedColumns = [
     'title',
@@ -40,8 +40,32 @@ export class ExpenseList implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   private expenseService = inject(ExpenseService);
   categories = signal<{ id: string; name: string }[]>([]);
+  private cdr = inject(ChangeDetectorRef);
+  private searchText = '';
+  private categoryFilter = '';
 
   ngOnInit(): void {
+    this.loadExpenses();
+    
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = (data: Expense) => {
+      const matchesSearch = !this.searchText || 
+        data.title.toLowerCase().includes(this.searchText) ||
+        data.description?.toLowerCase().includes(this.searchText) ||
+        data.expenseDate.toString().includes(this.searchText);
+
+      const matchesCategory = !this.categoryFilter ||
+        data.category.toLowerCase() === this.categoryFilter;
+
+      return matchesSearch && matchesCategory;
+    }
+  }
+  
+  loadExpenses(): void{
     this.loading.set(true);
     this.expenseService.getAllExpenses().subscribe({
       next: expenses => {
@@ -50,31 +74,32 @@ export class ExpenseList implements OnInit {
           .map(name => ({ id: name, name }));
         this.categories.set(unique);
         this.loading.set(false);
+        this.cdr.markForCheck();
         
       },
       error: ()=> {
         this.error.set('Failed to load Expense list');
         this.loading.set(false);
+        this.cdr.markForCheck();
       }
     })
+
   }
 
   applyFilter(event: Event){
-    const filterValue = (event.target as HTMLInputElement).value;
-
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchText = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.triggerFilter();
   }
 
   filterByCategory(category: string) {
-    if(!category){
-      this.dataSource.filter = '';
-      return;
-    }
+    this.categoryFilter = category.toLowerCase();
+    this.triggerFilter();
+  }
 
-    this.dataSource.filterPredicate = (data, filter)=>
-      data.category.toLocaleLowerCase().includes(filter);
-
-    this.dataSource.filter = category.toLocaleLowerCase();
+  private triggerFilter(): void{
+    this.dataSource.filter = (this.searchText || this.categoryFilter)
+      ? '__active__' 
+      : '';
   }
   
   //TODO

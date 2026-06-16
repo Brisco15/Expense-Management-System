@@ -1,22 +1,22 @@
 <!-- Toolbar -->
 <div class="toolbar-row">
-<div class="search-box-container">
-    <mat-form-field appearance="outline">
+    <div class="search-box-container">
+      <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
         <input 
           matInput
           (keyup)="applyFilter($event)"
           placeholder="Search expense"
         >
-    </mat-form-field>
-</div>
+      </mat-form-field>
+    </div>
 
 <!-- Category's filter -->
-<div class="category-filter-container">
-    <mat-form-field appearance="outline">
+    <div class="category-filter-container">
+      <mat-form-field appearance="outline">
         <mat-label>Category</mat-label>
 
-        <mat-select (selectionChange)="filterByCategory($event.value)">
+          <mat-select (selectionChange)="filterByCategory($event.value)">
             <mat-option value="">
               All
             </mat-option>
@@ -27,18 +27,18 @@
                 </mat-option>
             }
 
-        </mat-select>
+          </mat-select>
 
-    </mat-form-field>
-</div>
+      </mat-form-field>
+    </div>
 
 <!-- Add new expense button -->
-<div class="new-expense-container" style="margin-left:auto">
-    <button matButton="filled" color="primary" (click)="addExpense()">
+    <div class="new-expense-container" style="margin-left:auto">
+       <button matButton="filled" color="primary" (click)="addExpense()">
         + New Expense
-    </button>
+       </button>
+    </div>
 </div>
-</div><!-- /toolbar-row -->
 
 <!-- Expense table -->
 <div class="table-container">

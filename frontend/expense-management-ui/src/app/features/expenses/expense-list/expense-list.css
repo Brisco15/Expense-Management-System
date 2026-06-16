@@ -42,12 +42,27 @@
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
 
+mat-progress-spinner {
+  margin: 60px auto;
+}
+
+.error-message {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}
+
 /* Table Container */
 .table-container {
+  padding: 24px;
   background: var(--card-color, #ffffff);
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
-  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: auto;
 }
 
 /* Table */
@@ -56,16 +71,12 @@ table {
 }
 
 /* Header */
-th.mat-header-cell {
-  font-size: 0.75rem;
+mat-mdc-header-cell {
   font-weight: 600;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #94a3b8;
-  background: var(--card-color, #ffffff);
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--shell-border, rgba(0, 0, 0, 0.08));
-  white-space: nowrap;
+  letter-spacing: 0.05em;
+  color: var(--shell-text-muted);
 }
 
 /* Cells */
@@ -78,7 +89,8 @@ td.mat-cell {
 
 /* Row hover */
 tr.mat-row:hover td.mat-cell {
-  background: var(--shell-hover-bg, rgba(0, 0, 0, 0.03));
+  background: var(--shell-hover-bg);
+  transition: background 0.15s ease;
 }
 
 /* Amount column */
