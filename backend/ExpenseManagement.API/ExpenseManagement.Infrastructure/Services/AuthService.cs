@@ -63,6 +63,11 @@ namespace ExpenseManagement.Infrastructure.Services
             {
                 return null;
             }
+
+            if (!user.IsActive)
+            {
+                return null;
+            }
             // Verify the password using BCrypt
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
 

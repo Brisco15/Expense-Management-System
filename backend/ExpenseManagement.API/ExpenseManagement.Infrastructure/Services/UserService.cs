@@ -59,7 +59,6 @@ namespace ExpenseManagement.Infrastructure.Services
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null) return false;
-
             if (user.Role == role)
                 return true;
 
