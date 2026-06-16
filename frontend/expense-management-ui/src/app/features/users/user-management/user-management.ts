@@ -87,6 +87,10 @@ export class UserManagement implements OnInit, AfterViewInit {
   }
 
   toggleUserStatus(user: User): void{
+    const currentUser = this.authService.user();
+    if(currentUser?.email === user.email){
+      return;
+    }
     this.userService.updateUserStatus(user.id, { isActive: !user.isActive })
       .subscribe({
         next: ()=>{
