@@ -58,7 +58,7 @@ namespace ExpenseManagement.Infrastructure.Services
                 .GroupBy(e => e.Category!.Name)
                 .Select(g => new CategoryExpenseDto
                 {
-                    Category = g.Key,
+                    CategoryName = g.Key,
                     TotalAmount = g.Sum(e => e.Amount)
                 }).ToListAsync();
         }

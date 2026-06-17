@@ -19,6 +19,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> GetAllExpenses()
         {
             var expenses = await _expenseService.GetAllExpensesAsync();
@@ -37,14 +38,22 @@ namespace ExpenseManagement.API.Controllers
             {
                 return NotFound($"Expense with ID {id} not found.");
             }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("Manager");
+            if(expense.CreatedByUserId != userId && !isAdminOrManager)
+            {
+                return Forbid();
+            }
+
             return Ok(expense);
         }
 
         [HttpGet("user")]
         public async Task<IActionResult> GetUserExpenses()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var expenses = await _expenseService.GetUserExpensesAsync(userId!);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var expenses = await _expenseService.GetUserExpensesAsync(userId);
             if (expenses == null)
             {
                 return NotFound("No expenses found for the user.");
@@ -79,6 +88,11 @@ namespace ExpenseManagement.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto createExpenseDto)
         {
+            if (!ModelState.IsValid) 
+            { 
+                return BadRequest(ModelState);
+            }
+
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var expense = await _expenseService.CreateExpenseAsync(createExpenseDto, userId);
 

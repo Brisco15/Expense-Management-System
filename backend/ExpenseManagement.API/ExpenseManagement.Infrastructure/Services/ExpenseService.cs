@@ -75,10 +75,10 @@ namespace ExpenseManagement.Infrastructure.Services
 
         }
 
-        public async Task<List<ExpenseDto>> GetUserExpensesAsync(string userId)
+        public async Task<List<ExpenseDto>> GetUserExpensesAsync(int userId)
         {
             var expenses = await _context.Expenses
-                            .Where(e => e.UserId.ToString() == userId)
+                            .Where(e => e.UserId == userId)
                             .Include(e => e.Category)
                             .Include(e => e.ApprovedBy)
                             .OrderByDescending(e => e.CreatedAt)
@@ -196,9 +196,16 @@ namespace ExpenseManagement.Infrastructure.Services
 
             _context.Expenses.Add(expense);
             await _context.SaveChangesAsync();
+             
+            // load navigation properties 
+            await _context.Entry(expense)
+                .Reference(e => e.Category)
+                .LoadAsync();
+            await _context.Entry(expense)
+                .Reference(e => e.User)
+                .LoadAsync();
 
-            return await GetExpenseByIdAsync(expense.Id)
-                ?? throw new Exception("Failed to create expense.");
+            return MapToDto(expense);
         }
 
         /*    Update Method     */
@@ -226,6 +233,7 @@ namespace ExpenseManagement.Infrastructure.Services
             expense.Amount = updateExpenseDto.Amount;
             expense.ExpenseDate = updateExpenseDto.ExpenseDate;
             expense.Description = updateExpenseDto.Description;
+            expense.CategoryId = updateExpenseDto.CategoryId;
             expense.UpdatedAt = DateTime.UtcNow;
 
             _context.Expenses.Update(expense);
