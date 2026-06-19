@@ -1,11 +1,11 @@
 ﻿using ExpenseManagement.Application.DTOs;
-using System.IO;
+
 
 namespace ExpenseManagement.Application.Interfaces
 {
     public interface IExpenseService
     {
-        Task<List<ExpenseDto>> GetAllExpensesAsync();
+        Task<PagedResult<ExpenseDto>> GetAllExpensesAsync(int pageNumber = 1, int pageSize = 10, bool includeInactive = false);
         Task<ExpenseDto?> GetExpenseByIdAsync(int id);
         Task<List<ExpenseDto>> GetUserExpensesAsync(int userId);
         Task<ExpenseDto> CreateExpenseAsync( CreateExpenseDto createExpenseDto,int userId );

@@ -8,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseManagement.Infrastructure.Services
 {
-    // Service for managing user-related operations such as
-    // retrieving user information, updating roles, and deleting users
+   
     public class UserService : IUserService
     {
         private readonly AppDbContext _context;
@@ -18,11 +17,17 @@ namespace ExpenseManagement.Infrastructure.Services
         {
             _context = context;
         }
-
-        public async Task<List<UserDto>> GetAllUsersAsync()
+        
+        public async Task<PagedResult<UserDto>> GetAllUsersAsync(int pageNumber = 1, int pageSize = 10)
         {
-            return await _context.Users
+            var query = _context.Users.AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
                 .OrderByDescending(u => u.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(u => new UserDto
                 {
                     Id = u.Id,
@@ -34,6 +39,14 @@ namespace ExpenseManagement.Infrastructure.Services
                     IsActive = u.IsActive
                 })
                 .ToListAsync();
+            return new PagedResult<UserDto>
+            {
+                Items = users,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
         }
 
         

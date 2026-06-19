@@ -50,16 +50,32 @@ namespace ExpenseManagement.Infrastructure.Services
 
 
         /*    Gets Methods     */
-        public async Task<List<ExpenseDto>> GetAllExpensesAsync()
+        public async Task<PagedResult<ExpenseDto>> GetAllExpensesAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            bool includeInactive = false)
         {
-            var expenses = await _context.Expenses
+            var query = _context.Expenses.AsQueryable();
+
+            var totalCount = await query.CountAsync();
+            
+            var expenses = await query
                             .Include(e => e.User)
                             .Include(e => e.Category)
                             .Include(e => e.ApprovedBy)
                             .OrderByDescending(e => e.CreatedAt)
+                            .Skip((pageNumber -1) * pageSize)
+                            .Take(pageSize)
                             .ToListAsync();
 
-            return expenses.Select(MapToDto).ToList();
+            return new PagedResult<ExpenseDto> 
+            { 
+                Items = expenses.Select(MapToDto).ToList(),
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
             
         }
 
