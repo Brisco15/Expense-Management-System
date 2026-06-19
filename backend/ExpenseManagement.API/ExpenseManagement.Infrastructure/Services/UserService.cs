@@ -18,9 +18,14 @@ namespace ExpenseManagement.Infrastructure.Services
             _context = context;
         }
         
-        public async Task<PagedResult<UserDto>> GetAllUsersAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<PagedResult<UserDto>> GetAllUsersAsync(int pageNumber = 1, int pageSize = 5, bool includeInactive = false)
         {
             var query = _context.Users.AsQueryable();
+
+            if (!includeInactive)
+            {
+                query = query.Where(u => u.IsActive);
+            }
 
             var totalCount = await query.CountAsync();
 
