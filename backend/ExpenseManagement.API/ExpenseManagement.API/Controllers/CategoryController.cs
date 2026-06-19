@@ -1,22 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ExpenseManagement.Application.DTOs;
+﻿using ExpenseManagement.Application.DTOs;
 using ExpenseManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using ExpenseManagement.Domain.Entities;
-using ExpenseManagement.Domain.Enums;
-using ExpenseManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ExpenseManagement.Infrastructure.Services;
-
+using System.Security.Claims;
 
 namespace ExpenseManagement.API.Controllers
 {
+    
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [EnableRateLimiting("fixed")]
     public class CategoryController : ControllerBase
     {
         private readonly ILogger<CategoryController> _logger;
@@ -28,13 +24,48 @@ namespace ExpenseManagement.API.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        private int GetCurrentUserId()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-            if(categories == null)
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdClaim))
             {
-                return NotFound("No categories found.");
+                _logger.LogWarning("User ID claim not found in token");
+                throw new UnauthorizedAccessException("User identity not found");
+            }
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                _logger.LogError("Invalid user ID format: {UserIdClaim}", userIdClaim);
+                throw new UnauthorizedAccessException("Invalid user identifier format");
+            }
+
+            return userId;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] bool includeInactive = false
+            )
+        {
+            if (pageNumber < 1 || pageSize < 1 || pageSize > 10)
+            {
+                return BadRequest("PageNumber must be >= 1, PageSize must be 1-10.");
+            }
+
+            var categories = await _categoryService.GetAllCategoriesAsync(pageNumber, pageSize, includeInactive);
+            if(categories == null || !categories.Items.Any())
+            {
+                return Ok(new PagedResult<CategoryExpenseDto> 
+                {
+                    Items = new List<CategoryExpenseDto>(),
+                    TotalCount = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = 0
+                });
             }
             return Ok(categories);
         }
@@ -59,58 +90,150 @@ namespace ExpenseManagement.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var category = await _categoryService.CreateCategoryAsync(createCategoryDto, userId);
 
-            if(category == null)
+            try
             {
-                return BadRequest("Failed to create category");
+                var userId = GetCurrentUserId();
+                _logger.LogInformation("User {UserId} creating category '{CategoryName}'",
+                    userId, createCategoryDto.CategoryName);
+
+                var category = await _categoryService.CreateCategoryAsync(createCategoryDto, userId);
+
+                _logger.LogInformation("Category {CategoryId} created successfully by user {UserId}",
+                    category.CategoryId, userId);
+
+                return CreatedAtAction(
+                    nameof(GetCategoryById),
+                    new { id = category.CategoryId },
+                    category);
             }
-            return Ok(category);
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "Unauthorized access attempt");
+                return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Failed to create category: {Message}", ex.Message);
+                return Conflict(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error creating category");
+                return StatusCode(500, "An error occurred while creating the category");
+            }
         }
 
-        [HttpPut("{id}")]
+        
+        [HttpPut("{id:int:min(1)}")]
         [Authorize(Policy = "AdminOnly")]
-
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
+        
+        public async Task<ActionResult<CategoryExpenseDto>> Update(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
-            if(id != updateCategoryDto.CategoryId)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != updateCategoryDto.CategoryId)
             {
                 return BadRequest("Category ID mismatch");
             }
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var category = await _categoryService.UpdateCategoryAsync(updateCategoryDto, userId);
 
-            if(category == null)
+            try
             {
-                return NotFound("Failed to update category");
+                _logger.LogInformation("Updating category {CategoryId}", id);
+
+                var category = await _categoryService.UpdateCategoryAsync(updateCategoryDto, id);
+
+                _logger.LogInformation("Category {CategoryId} updated successfully", id);
+
+                return Ok(category);
             }
-            return Ok(category);
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Category {CategoryId} not found", id);
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Failed to update category {CategoryId}: {Message}", id, ex.Message);
+                return Conflict(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Invalid argument for category {CategoryId}", id);
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error updating category {CategoryId}", id);
+                return StatusCode(500, "An error occurred while updating the category");
+            }
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Policy ="AdminOnly")]
+       
+        [HttpDelete("{id:int:min(1)}")]
+        [Authorize(Policy = "AdminOnly")]
+        
         public async Task<IActionResult> HardDelete(int id)
         {
-            var result = await _categoryService.DeleteCategoryAsync(id);
-            if(!result)
+            try
             {
-                return NotFound($"Category with ID {id} not found.");
+                _logger.LogWarning("Hard deleting category {CategoryId}", id);
+
+                var result = await _categoryService.DeleteCategoryAsync(id);
+
+                if (!result)
+                {
+                    return NotFound($"Category with ID {id} not found.");
+                }
+
+                _logger.LogInformation("Category {CategoryId} deleted successfully", id);
+
+                return NoContent();
             }
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Cannot delete category {CategoryId}: {Message}", id, ex.Message);
+                return Conflict(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting category {CategoryId}", id);
+                return StatusCode(500, "An error occurred while deleting the category");
+            }
         }
 
-        [HttpDelete("{id}/Softdelete")]
-        [Authorize(Policy ="Adminonly")]
-        public async Task<IActionResult>SoftDelete(int id)
+        
+        [HttpPatch("{id:int:min(1)}/deactivate")]
+        [Authorize(Policy = "AdminOnly")]
+        
+        public async Task<IActionResult> DeactivateCategory(int id)
         {
-            var result = await _categoryService.SoftDeleteCategoryAsync(id);
-            if (!result)
+            try
             {
-                return NotFound($"Category with ID {id} not found.");
+                _logger.LogInformation("Deactivating category {CategoryId}", id);
+
+                var result = await _categoryService.SoftDeleteCategoryAsync(id);
+
+                if (!result)
+                {
+                    return NotFound($"Category with ID {id} not found.");
+                }
+
+                _logger.LogInformation("Category {CategoryId} deactivated successfully", id);
+
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deactivating category {CategoryId}", id);
+                return StatusCode(500, "An error occurred while deactivating the category");
+            }
         }
 
+        
+        
     }
 }

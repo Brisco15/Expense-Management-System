@@ -2,6 +2,7 @@
 using ExpenseManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
     
 
@@ -10,6 +11,8 @@ namespace ExpenseManagement.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [EnableRateLimiting("fixed")]
+
     public class BudgetController : ControllerBase
     {
         private readonly IBudgetService _budgetService;

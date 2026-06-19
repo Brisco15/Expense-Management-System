@@ -1,12 +1,14 @@
 ﻿using ExpenseManagement.Application.DTOs;
 using ExpenseManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ExpenseManagement.API.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("fixed")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;

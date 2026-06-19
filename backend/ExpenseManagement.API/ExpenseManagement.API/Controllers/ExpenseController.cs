@@ -2,6 +2,7 @@
 using ExpenseManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 
@@ -10,6 +11,7 @@ namespace ExpenseManagement.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [EnableRateLimiting("fixed")]
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _expenseService;
@@ -20,13 +22,31 @@ namespace ExpenseManagement.API.Controllers
 
         [HttpGet]
         [Authorize(Policy = "AdminOrManager")]
-        public async Task<IActionResult> GetAllExpenses()
+        public async Task<IActionResult> GetAllExpenses(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] bool includeInactive = false
+
+            )
         {
-            var expenses = await _expenseService.GetAllExpensesAsync();
-            if (expenses == null)
+            if (pageNumber < 1 || pageSize < 1 || pageSize > 10)
             {
-                return NotFound("No expenses found.");
+                return BadRequest("PageNumber must be >= 1, PageSize must be 1-10.");
             }
+
+            var expenses = await _expenseService.GetAllExpensesAsync(pageNumber, pageSize, includeInactive);
+            if (expenses == null || !expenses.Items.Any())
+            {
+                return Ok(new PagedResult<ExpenseDto>
+                {
+                    Items = new List<ExpenseDto>(),
+                    TotalCount = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = 0
+                });
+            }
+
             return Ok(expenses);
         }
 
@@ -101,7 +121,7 @@ namespace ExpenseManagement.API.Controllers
                 return BadRequest("Failed to create expense.");
             }
 
-            return Ok(expense);
+            return CreatedAtAction(nameof(GetExpenseById), new { id = expense.Id }, expense);
         }
 
         [HttpPost("{id}/receipt")]
@@ -135,7 +155,7 @@ namespace ExpenseManagement.API.Controllers
             {
                 return NotFound($"Expense with ID {id} not found or failed to upload receipt.");
             }
-            return Ok(new { receiptPath = result });
+            return CreatedAtAction(nameof(GetExpenseById), new { id = id }, new { receiptPath = result });
         }
 
         [HttpPost("{id}/approve")]
@@ -152,7 +172,7 @@ namespace ExpenseManagement.API.Controllers
             {
                 return NotFound("Failed to approve/reject expense.");
             }
-            return Ok(expense);
+            return CreatedAtAction(nameof(GetExpenseById), new { id = expense.Id }, expense);
         }
 
         [HttpGet("pending")]

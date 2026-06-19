@@ -1,12 +1,14 @@
 ﻿using ExpenseManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ExpenseManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [EnableRateLimiting("fixed")]
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;

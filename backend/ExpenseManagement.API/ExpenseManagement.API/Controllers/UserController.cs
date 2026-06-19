@@ -3,6 +3,7 @@ using ExpenseManagement.Application.Interfaces;
 using ExpenseManagement.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 
@@ -14,6 +15,7 @@ namespace ExpenseManagement.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Policy = "AdminOnly")]
+    [EnableRateLimiting("fixed")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -24,9 +26,29 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] bool includeInactive = false
+            )
         {
-            var users = await _userService.GetAllUsersAsync();
+            if (pageNumber < 1 || pageSize < 1 || pageSize > 10)
+            {
+                return BadRequest("PageNumber must be >= 1, PageSize must be 1-10.");
+            }
+
+            var users = await _userService.GetAllUsersAsync(pageNumber, pageSize, includeInactive);
+            if(users == null || !users.Items.Any())
+            {
+                return Ok(new PagedResult<UserDto>
+                {
+                    Items = new List<UserDto>(),
+                    TotalCount = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = 0
+                });
+            }
             return Ok(users);
         }
 
