@@ -4,7 +4,7 @@ using ExpenseManagement.Domain.Entities;
 using ExpenseManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
 
 namespace ExpenseManagement.Infrastructure.Services
 {
@@ -122,6 +122,22 @@ namespace ExpenseManagement.Infrastructure.Services
         }
 
         /* Delete Method */
+
+        public async Task<bool> SoftDeleteCategoryAsync(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if(category == null)
+            {
+                return false;
+            }
+
+            category.IsActive = false;
+            category.UpdatedAt = DateTime.UtcNow;
+            
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
