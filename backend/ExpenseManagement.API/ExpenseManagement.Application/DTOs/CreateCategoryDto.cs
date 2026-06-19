@@ -18,6 +18,6 @@ namespace ExpenseManagement.Application.DTOs
         [Range(0, 999999999.99, ErrorMessage = "Yearly budget must be zero or positive")]
         public decimal? YearlyBudget { get; set; }
 
-        
+       
     }
 }

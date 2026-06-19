@@ -3,16 +3,20 @@ using ExpenseManagement.Application.Interfaces;
 using ExpenseManagement.Domain.Entities;
 using ExpenseManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ExpenseManagement.Infrastructure.Services
 {
     public class CategoryService : ICategoryService
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<CategoryService> _logger;
 
-        public CategoryService(AppDbContext context)
+        public CategoryService(AppDbContext context, ILogger<CategoryService> logger)
         {
             _context = context;
+            _logger = logger;
         }
     
 
@@ -36,12 +40,32 @@ namespace ExpenseManagement.Infrastructure.Services
         }
 
         /* Gets Methods */
-        public async Task<List<CategoryExpenseDto>> GetAllCategoriesAsync()
+        public async Task<PagedResult<CategoryExpenseDto>> GetAllCategoriesAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            bool includeInactive = false)
         {
-            var categories = await _context.Categories
+            var query = _context.Categories.AsQueryable();
+            if (!includeInactive)
+            {
+                query = query.Where(c => c.IsActive);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var categories = await query
                               .OrderByDescending(c => c.CreatedAt)
+                              .Skip((pageNumber - 1) * pageSize)
+                              .Take(pageSize)
                               .ToListAsync();
-            return categories.Select(MapToDto).ToList();
+            return new PagedResult<CategoryExpenseDto> 
+            { 
+                Items = categories.Select(MapToDto).ToList(),
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
 
         }
 
@@ -57,30 +81,44 @@ namespace ExpenseManagement.Infrastructure.Services
 
         public async Task<CategoryExpenseDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto, int userId)
         {
-            var isDuplicate = await _context.Categories
-                               .AnyAsync(c => c.Name.Equals(createCategoryDto.CategoryName, StringComparison.OrdinalIgnoreCase));
-            
+            _logger.LogInformation("Creating category {CategoryName} for user {UserId}",
+                createCategoryDto.CategoryName, userId);
 
-            if(isDuplicate)
+            try
             {
-                throw new InvalidOperationException($"Category with name '{createCategoryDto.CategoryName}' already exists");
+                var isDuplicate = await _context.Categories
+                                   .AnyAsync(c => c.Name.Equals(createCategoryDto.CategoryName, StringComparison.OrdinalIgnoreCase));
+
+
+                if (isDuplicate)
+                {
+                    throw new InvalidOperationException($"Category with name '{createCategoryDto.CategoryName}' already exists");
+                }
+
+                var category = new Category
+                {
+
+                    Name = createCategoryDto.CategoryName,
+                    Description = createCategoryDto.Description,
+                    MonthlyBudget = createCategoryDto.MonthlyBudget,
+                    YearlyBudget = createCategoryDto.YearlyBudget,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    IsActive = true,
+                };
+
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Successfully created category {CategoryId}", category.Id);
+                return await GetCategoryByIdAsync(category.Id)
+                    ?? throw new Exception("Failed to retrieve created category"); ;
+
             }
-
-            var category = new Category
+            catch(Exception ex)
             {
-                
-                Name = createCategoryDto.CategoryName,
-                Description = createCategoryDto.Description,
-                MonthlyBudget = createCategoryDto.MonthlyBudget,
-                YearlyBudget = createCategoryDto.YearlyBudget,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = true,
-            };
-
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-            return await GetCategoryByIdAsync(category.Id) ?? throw new Exception("Failed to create category");
+                _logger.LogError(ex, "Failed to create category {CategoryName}", createCategoryDto.CategoryName);
+                throw;
+            }
         }
 
         /* Delete Method */
