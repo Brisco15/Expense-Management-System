@@ -1,12 +1,12 @@
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard';
-import { Login } from './features/auth/login/login';
-import { Register } from './features/auth/register/register';
-import { DashboardHome } from './features/dashboard/dashboard-home/dashboard-home';
-import { MainLayout } from './core/layout/main-layout/main-layout';
-import { UserManagement } from './features/users/user-management/user-management';
-import { CategoryList } from './features/categories/category-list/category-list';
-import { ExpenseList } from './features/expenses/expense-list/expense-list';
+ import { Routes } from '@angular/router';
+ import { authGuard } from './core/guards/auth-guard';
+// import { Login } from './features/auth/login/login';
+// import { Register } from './features/auth/register/register';
+// import { DashboardHome } from './features/dashboard/dashboard-home/dashboard-home';
+// import { MainLayout } from './core/layout/main-layout/main-layout';
+// import { UserManagement } from './features/users/user-management/user-management';
+// import { CategoryList } from './features/categories/category-list/category-list';
+// import { ExpenseList } from './features/expenses/expense-list/expense-list';
 
 export const routes: Routes = [
     {
@@ -17,32 +17,32 @@ export const routes: Routes = [
     },
     {
         path: 'auth/login',
-        component: Login
+        loadComponent:()=> import('./features/auth/login/login').then(m => m.Login)
     },
     {
         path: 'auth/register',
-        component: Register
+        loadComponent: ()=> import('./features/auth/register/register').then(m => m.Register)
     },
     {
         path: '',
-        component: MainLayout,
+        loadComponent: ()=> import('./core/layout/main-layout/main-layout').then(m => m.MainLayout),
         canActivate: [authGuard],
         children: [
             {
                 path: 'dashboard',
-                component: DashboardHome
+                loadComponent: ()=> import('./features/dashboard/dashboard-home/dashboard-home').then(m => m.DashboardHome)
             },
             {
                 path: 'users',
-                component: UserManagement
+                loadComponent: ()=> import('./features/users/user-management/user-management').then(m => m.UserManagement)
             },
             {
                 path: 'categories',
-                component: CategoryList
+                loadComponent: ()=> import('./features/categories/category-list/category-list').then(m => m.CategoryList)
             },
             {
                 path: 'expenses',
-                component: ExpenseList
+                loadComponent: ()=> import('./features/expenses/expense-list/expense-list').then(m => m.ExpenseList)
             },
 
         ]

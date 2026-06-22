@@ -22,6 +22,7 @@ import { MatSort } from '@angular/material/sort';
   templateUrl: './user-management.html',
   styleUrl: './user-management.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  
 })
 export class UserManagement implements OnInit, AfterViewInit {
   
