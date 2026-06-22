@@ -4,6 +4,9 @@ export interface CategoryExpense {
     description?: string;
     monthlyBudget: number;
     yearlyBudget?: number;
+    totalExpenses: number;
+    totalAmount: number;
+    lastExpenseDate?: string;
     isActive: boolean;
     createdAt:string;
     updatedAt: string; 

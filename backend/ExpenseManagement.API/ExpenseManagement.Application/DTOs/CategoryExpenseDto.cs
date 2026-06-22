@@ -10,8 +10,8 @@ namespace ExpenseManagement.Application.DTOs
         public decimal? MonthlyBudget { get; set; } = decimal.Zero;
         public decimal? YearlyBudget { get; set; } = decimal.Zero;
 
-        public int TotalExpenses { get; set; }
-        public decimal TotalAmount { get; set; }
+        public int TotalExpenses { get; set; } = 0;
+        public decimal TotalAmount { get; set; } = decimal.Zero;
         public DateTime? LastExpenseDate { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

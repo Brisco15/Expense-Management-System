@@ -1,1 +1,50 @@
-<p>category-list works!</p>
+<!-- Toolbar -->
+<div class="toolbar-row">
+    <div class="search-box-container">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input 
+          matInput
+          (keyup)="applyFilter($event)"
+          placeholder="Search Category"
+        >
+      </mat-form-field>
+    </div>
+
+<!-- Budget filter -->
+    <!-- <div class="category-filter-container">
+      <mat-form-field appearance="outline">
+        <mat-label>Monthly Budget</mat-label>
+
+          <mat-select (selectionChange)="filterByMonthlyBudget($event.value)">
+            <mat-option value="">
+              All
+            </mat-option>
+
+            @for(category of categories(); track category.id){
+                <mat-option [value]="category.monthyBudget">
+                    {{ category.monthlyBudget }}
+                </mat-option>
+            }
+
+          </mat-select>
+
+      </mat-form-field>
+    </div> -->
+
+<!-- Add new Category button -->
+    <div class="new-expense-container" style="margin-left:auto">
+       <button matButton="filled" color="primary" (click)="addCategory()">
+        + New Category
+       </button>
+    </div>
+</div>
+
+<!-- Spinner  -->
+<div class="table-container">
+    @if(loading()){
+
+
+    }
+
+</div>
