@@ -3,6 +3,10 @@ import { environment } from '../../../environment';
 import { HttpClient } from '@angular/common/http';
 import { Expense } from '../models/expenses.model';
 import { CreateExpense } from '../models/create-expense.model';
+import { PagedResult } from '../models/paged-result.model';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root',
@@ -13,27 +17,29 @@ export class ExpenseService {
 
   constructor(private http: HttpClient) {}
 
-  getAllExpenses() {
-    return this.http.get<Expense[]>(this.apiUrl);
+  getAllExpenses(): Observable<Expense[]> {
+    return this.http.get<PagedResult<Expense>>(this.apiUrl).pipe(
+      map(response => response.items)
+    );
   }
 
-  getExpenseById(id: number) {
+  getExpenseById(id: number) : Observable<Expense> {
     return this.http.get<Expense>(`${this.apiUrl}/${id}`);
   }
 
-  getExpensesByUser() {
+  getExpensesByUser(): Observable<Expense[]> {
     return this.http.get<Expense[]>(`${this.apiUrl}/user`);
   }
 
-  create(dto: CreateExpense) {
+  create( dto: CreateExpense):Observable<Expense> {
     return this.http.post<Expense>(this.apiUrl, dto);
   }
 
-  update(dto: Expense) {
-    return this.http.put<Expense>(`${this.apiUrl}/user`, dto);
+  update( id: number, dto: Expense): Observable<any> {
+    return this.http.put<Expense>(`${this.apiUrl}/${id}`, dto);
   }
 
-  delete(id: number) {
+  delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
