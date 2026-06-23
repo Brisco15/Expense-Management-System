@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using System.Security.Claims;
 using System.Text;
 
@@ -78,8 +79,33 @@ namespace ExpenseManagement.Infrastructure.Services
 
             return GenerateToken(user);
         }
+
+        public async Task<AuthResponseDto?>RefreshTokenAsync(RefreshTokenDto refreshTokenDto)
+        {
+            // Find the user by refresh token
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshTokenDto.RefreshToken);
+            if(user == null)
+            {
+                return null;
+            }
+
+            //Cgeck if the refresh token has expired
+            if(user.RefreshTokenExpiryTime == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            if (!user.IsActive)
+            {
+                return null;
+            }
+
+            return await GenerateTokenAsync(user);
+        }
+
+
         // Generate a JWT token for the authenticated user
-        private AuthResponseDto GenerateToken(User user)
+        private async AuthResponseDto GenerateTokenAsync(User user)
         {
             // Create claims for the JWT token, including user ID, email, and role
             var claims = new[]
@@ -114,6 +140,21 @@ namespace ExpenseManagement.Infrastructure.Services
                 expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
                 signingCredentials: creds
                 );
+
+            // Generate refresh token
+            var refreshToken = GenerateRefreshToken();
+
+            // Get refresh token fron configuration
+            var refreshTokenExpirationDaysString = _configuration["Jwt:RefreshTokenExpirationDays"];
+            var refreshTokenExpirationDays = int.TryParse(refreshTokenExpirationDaysString, out var parsedDays) ? parsedDays : 7;
+
+            // Update user with new refresh token
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(refreshTokenExpirationDays);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
             // Return an authentication response containing
             return new AuthResponseDto
             {
@@ -123,6 +164,15 @@ namespace ExpenseManagement.Infrastructure.Services
                 ExpiresAt = token.ValidTo,
                 ExpiresIn = (int)(token.ValidTo - DateTime.UtcNow).TotalSeconds
             };
+
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[128];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

@@ -39,5 +39,16 @@ namespace ExpenseManagement.API.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDto refreshTokenDto)
+        {
+            var result = await _authService.RefreshTokenAsync(refreshTokenDto);
+            if (result == null)
+            {
+                return Unauthorized(new { message = "Invalid or expired refresh token." });
+            }
+            return Ok(result);
+        }
     }
 }
