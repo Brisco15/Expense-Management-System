@@ -124,7 +124,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
     }
     const dialogRef = this.dialog.open(CreateCategory, {
       width: '400px',
-      height: '500px'
+      height: '400px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
