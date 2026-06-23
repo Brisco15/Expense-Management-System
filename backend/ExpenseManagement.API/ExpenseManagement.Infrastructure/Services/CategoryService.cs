@@ -34,7 +34,9 @@ namespace ExpenseManagement.Infrastructure.Services
                 IsActive = category.IsActive,
                 TotalExpenses = category.Expenses?.Count ?? 0,
                 TotalAmount = category.Expenses?.Sum(e => e.Amount) ?? 0,
-                LastExpenseDate = category.Expenses?.Max(e => e.ExpenseDate)
+                LastExpenseDate = category.Expenses != null && category.Expenses.Any()
+                    ? category.Expenses.Max(e => e.ExpenseDate)
+                    : null
 
             };
         }
@@ -45,7 +47,9 @@ namespace ExpenseManagement.Infrastructure.Services
             int pageSize = 10,
             bool includeInactive = false)
         {
-            var query = _context.Categories.AsQueryable();
+            var query = _context.Categories
+                .Include(c => c.Expenses)
+                .AsQueryable();
             if (!includeInactive)
             {
                 query = query.Where(c => c.IsActive);
@@ -87,7 +91,7 @@ namespace ExpenseManagement.Infrastructure.Services
             try
             {
                 var isDuplicate = await _context.Categories
-                                   .AnyAsync(c => c.Name.Equals(createCategoryDto.CategoryName, StringComparison.OrdinalIgnoreCase));
+                                   .AnyAsync(c => c.Name.ToLower() == createCategoryDto.CategoryName.ToLower());
 
 
                 if (isDuplicate)
