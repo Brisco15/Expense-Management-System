@@ -27,7 +27,6 @@ export class CreateCategory {
       categoryName: ['', [Validators.maxLength(50), Validators.required]],
       description: ['', [Validators.maxLength(100), Validators.required]],
       monthlyBudget: [null, Validators.required],
-      //yearlyBudget: [null, Validators.required],
       
     })
   }
