@@ -3,4 +3,8 @@ export interface CreateCategory {
     description?: string;
     monthlyBudget?: number;
     yearlyBudget?: number;
+    totalExpenses: number;
+    totalAmount: number;
+    createdAt: string;
+    isActive: boolean;
 }

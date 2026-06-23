@@ -41,10 +41,19 @@ export class AuthService {
     this.userSignal.set(null);
   }
 
-  getToken(): string | null{
+  isTokenExpired(): boolean {
+    const user = this.getUser();
+    if (!user?.expiresAt) return true;
+    return new Date(user.expiresAt) <= new Date();
+  }
+
+  getToken(): string | null {
+    if (this.isTokenExpired()) {
+      this.logout();
+      return null;
+    }
     const user = this.getUser();
     return user ? user.token : null;
-
   }
 
   getUser(): AuthResponse | null {

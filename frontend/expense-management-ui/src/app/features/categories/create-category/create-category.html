@@ -1,1 +1,33 @@
-<p>create-category works!</p>
+<h2>Create a category</h2>
+<form [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput  type="text" formControlName="categoryName" maxlength="50">
+
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input matInput  type="text" formControlName="description" maxlength="100">
+
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Monthly Budget</mat-label>
+        <input matInput  type="number" formControlName="monthlyBudget">
+
+    </mat-form-field>
+    <!-- <mat-form-field appearance="outline">
+        <mat-label>Yearly Budget</mat-label>
+        <input matInput  type="number" formControlName="yearlyBudget" readonly>
+
+    </mat-form-field> -->
+
+    <div class="buttons">
+        <button mat-raised-button style="background-color: rgb(21, 228, 31);" type="submit" [disabled]="form.invalid" (click)="onCreate()">
+            Create
+        </button>
+        <button mat-raised-button style="background-color: rgb(228, 21, 21);" (click)="onCancel()">
+            Cancel
+        </button>
+    </div>
+</form>
+

@@ -27,8 +27,8 @@ export class CategoryService {
     return this.http.get<CategoryExpense>(this.apiUrl)
   }
 
-  createCategory(dto: CreateCategory ): Observable<CategoryExpense>{
-    return this.http.post<CategoryExpense>(this.apiUrl, dto)
+  createCategory(newCategory: CreateCategory ): Observable<CategoryExpense>{
+    return this.http.post<CategoryExpense>(this.apiUrl, newCategory)
   }
 
   updateCategory(id: number, dto: UpdateCategory): Observable<any>{

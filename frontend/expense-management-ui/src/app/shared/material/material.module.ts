@@ -11,11 +11,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule} from "@angular/material/progress-spinner"
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import { MatSelectModule } from "@angular/material/select";
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -36,7 +37,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatSelectModule,
         MatButtonToggleModule,
         MatSortModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatDialogModule,
+        
     ]
 })
 
