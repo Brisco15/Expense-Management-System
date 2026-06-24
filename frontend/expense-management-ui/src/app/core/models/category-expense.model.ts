@@ -11,3 +11,7 @@ export interface CategoryExpense {
     createdAt:string;
     updatedAt: string; 
 }
+
+export interface UpdateCategoryStatusDto {
+    isActive: boolean;
+}

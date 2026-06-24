@@ -52,15 +52,6 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef ="createdAt">
-            <th mat-header-cell *matHeaderCellDef>
-                Created At
-            </th>
-            <td mat-cell *matCellDef="let category">
-                {{category.createdAt | date:'dd/MM/yyyy'}}
-            </td>
-        </ng-container>
-
         <ng-container matColumnDef ="monthlyBudget">
             <th mat-header-cell *matHeaderCellDef>
                 Monthly Budget
@@ -94,6 +85,26 @@
             </th>
             <td mat-cell *matCellDef="let category">
                 {{category.totalAmount}}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>
+                Status
+            </th>
+            <td mat-cell *matCellDef="let category">
+                <span [class]="category.isActive ? 'status-active' : 'status-inactive'">
+                  {{ category.isActive ? 'Active' : 'Inactive' }}
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef ="createdAt">
+            <th mat-header-cell *matHeaderCellDef>
+                Created At
+            </th>
+            <td mat-cell *matCellDef="let category">
+                {{category.createdAt | date:'dd/MM/yyyy'}}
             </td>
         </ng-container>
 

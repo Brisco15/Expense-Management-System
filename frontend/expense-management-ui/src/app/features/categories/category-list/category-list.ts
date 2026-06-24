@@ -8,9 +8,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CategoryService } from '../../../core/services/category';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { isActive, Router } from '@angular/router';
 import { CreateCategory } from '../create-category/create-category';
 import { AuthService } from '../../../core/services/auth';
+import { EditCategory } from '../edit-category/edit-category';
 
 @Component({
   selector: 'app-category-list',
@@ -30,11 +31,12 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   displayedColumns = [
     'categoryName',
     'description',
-    'createdAt',
     'monthlyBudget',
     'yearlyBudget',
     'totalExpenses',
     'totalAmount',
+    'status',
+    'createdAt',
     'actions'
   ];
   
@@ -45,6 +47,8 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   trackById = ( _index: number, category: CategoryExpense) => category.categoryId;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  readonly statuses = ['Active', 'Inactive'];
 
   http = inject(HttpClient);
   router = inject(Router);
@@ -100,6 +104,18 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   }
 
   toggleCategoryStatus(category: CategoryExpense): void{
+    this.categoryService.updateCategoryStatus(category.categoryId, {isActive: !category.isActive}).subscribe({
+      next : ()=>{
+        this.dataSource.data = [...this.dataSource.data.map(c => 
+          c.categoryId === category.categoryId ? { ...c, isActive: !c.isActive } : c
+        )];
+        this.cdr.markForCheck();
+      },
+      error : ()=> {
+        this.error.set(`Failed to Activate or Deactivate ${category.categoryName}`);
+        this.cdr.markForCheck();
+      }
+    })
 
   }
 
@@ -122,12 +138,58 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
         }
       })
     }
-
-    
-
   }
 
   updateCategory(category: CategoryExpense): void{
+    if(!this.isAdmin){
+      this.error.set('Only admins can update a category. ');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const dialogRef = this.dialog.open(EditCategory, {
+      width: '400px',
+      height: '300px',
+      data: { category }
+    });
+
+    dialogRef.afterClosed().subscribe(result =>{
+      if(!result) return;
+
+      const categoryToEdit = this.categories.find(c => c.categoryId === category.categoryId);
+      if(!categoryToEdit){
+        this.error.set('Category not found.');
+        return;
+      }
+
+      const updatedCategory = {
+        categoryId: category.categoryId,
+        categoryName: result.categoryName,
+        description: result.description,
+        updatedAt: new Date().toISOString(),
+        isActive: true,
+      };
+
+      this.categoryService.updateCategory(category.categoryId, updatedCategory).subscribe({
+        next: ()=> {
+          alert(`Category was successfully updated.`);
+          
+          this.loadCategories();
+        },
+        error: (err: any)=>{
+          if (err.status === 409) {
+            this.error.set(`A category named '${result.categoryName}' already exists.`);
+          } else if (err.status === 400) {
+            this.error.set('Invalid data. Please check your inputs.');
+          } else {
+            this.error.set('Failed to update category. Please try again.');
+          }
+          this.cdr.markForCheck();
+
+        }
+      })
+    })
+
 
   }
 

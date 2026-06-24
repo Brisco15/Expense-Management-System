@@ -142,7 +142,7 @@ export class UserManagement implements OnInit, AfterViewInit {
     if(confirm(`Do you want to delete user ${user.fullName}?`)){
       this.userService.deleteUser(user.id).subscribe({
         next: ()=>{
-          this.dataSource.data = this.dataSource.data.filter( u => u.id !== user.id);
+          this.dataSource.data = [...this.dataSource.data.filter( u => u.id !== user.id)];
           this.cdr.markForCheck();
         },
         error: ()=> {
