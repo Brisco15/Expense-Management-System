@@ -1,6 +1,7 @@
 ﻿using ExpenseManagement.Application.DTOs;
 using ExpenseManagement.Application.Interfaces;
 using ExpenseManagement.Domain.Entities;
+using ExpenseManagement.Domain.Enums;
 using ExpenseManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,11 @@ namespace ExpenseManagement.Infrastructure.Services
 
     private static CategoryExpenseDto MapToDto(Category category)
         {
+            // Exclude rejected expenses from aggregates for consistency with BudgetService
+            var validExpenses = category.Expenses
+                ?.Where(e => e.Status != ExpenseStatus.Rejected)
+                .ToList();
+
             return new CategoryExpenseDto
             {
                 CategoryId = category.Id,
@@ -32,12 +38,11 @@ namespace ExpenseManagement.Infrastructure.Services
                 CreatedAt = category.CreatedAt,
                 UpdatedAt = category.UpdatedAt,
                 IsActive = category.IsActive,
-                TotalExpenses = category.Expenses?.Count ?? 0,
-                TotalAmount = category.Expenses?.Sum(e => e.Amount) ?? 0,
-                LastExpenseDate = category.Expenses != null && category.Expenses.Any()
-                    ? category.Expenses.Max(e => e.ExpenseDate)
+                TotalExpenses = validExpenses?.Count ?? 0,
+                TotalAmount = validExpenses?.Sum(e => e.Amount) ?? 0,
+                LastExpenseDate = validExpenses != null && validExpenses.Any()
+                    ? validExpenses.Max(e => e.ExpenseDate)
                     : null
-
             };
         }
 
@@ -47,30 +52,45 @@ namespace ExpenseManagement.Infrastructure.Services
             int pageSize = 10,
             bool includeInactive = false)
         {
-            var query = _context.Categories
-                .Include(c => c.Expenses)
-                .AsQueryable();
+            var baseQuery = _context.Categories.AsQueryable();
             if (!includeInactive)
+                baseQuery = baseQuery.Where(c => c.IsActive);
+
+            var totalCount = await baseQuery.CountAsync();
+
+            // Project aggregates in SQL — no expense rows transferred to application
+            var categories = await baseQuery
+                .OrderByDescending(c => c.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new CategoryExpenseDto
+                {
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    Description = c.Description,
+                    MonthlyBudget = c.MonthlyBudget,
+                    YearlyBudget = c.YearlyBudget,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt,
+                    IsActive = c.IsActive,
+                    TotalExpenses = c.Expenses.Count(e => e.Status != ExpenseStatus.Rejected),
+                    TotalAmount = c.Expenses
+                        .Where(e => e.Status != ExpenseStatus.Rejected)
+                        .Sum(e => (decimal?)e.Amount) ?? 0,
+                    LastExpenseDate = c.Expenses
+                        .Where(e => e.Status != ExpenseStatus.Rejected)
+                        .Max(e => (DateTime?)e.ExpenseDate)
+                })
+                .ToListAsync();
+
+            return new PagedResult<CategoryExpenseDto>
             {
-                query = query.Where(c => c.IsActive);
-            }
-
-            var totalCount = await query.CountAsync();
-
-            var categories = await query
-                              .OrderByDescending(c => c.CreatedAt)
-                              .Skip((pageNumber - 1) * pageSize)
-                              .Take(pageSize)
-                              .ToListAsync();
-            return new PagedResult<CategoryExpenseDto> 
-            { 
-                Items = categories.Select(MapToDto).ToList(),
+                Items = categories,
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
             };
-
         }
 
         public async Task<CategoryExpenseDto?> GetCategoryByIdAsync(int id)

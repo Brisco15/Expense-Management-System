@@ -76,7 +76,7 @@ namespace ExpenseManagement.API.Controllers
         public async Task<IActionResult> UpdateCategorybudget(int categoryId,[FromBody] UpdateCategoryBudgetDto updateCategoryBudgetDto)
         {
            
-            if (updateCategoryBudgetDto.MonthlyBudget.HasValue && updateCategoryBudgetDto.YearlyBudget.HasValue)
+            if (!updateCategoryBudgetDto.MonthlyBudget.HasValue && !updateCategoryBudgetDto.YearlyBudget.HasValue)
             {
                 return BadRequest("At least one budget value must be provided");
             }

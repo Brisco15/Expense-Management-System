@@ -30,11 +30,10 @@ namespace ExpenseManagement.Infrastructure.Services
             // Check if the email is already registered
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
             {
-                // Email already exists
+                
                 return null;
             }
 
-            // Create a new User entity and hash the password
             var user = new User
             {
                 FullName = registerDto.FullName,
@@ -98,7 +97,7 @@ namespace ExpenseManagement.Infrastructure.Services
                 return null;
             }
 
-            // Check if user is still active
+            
             if (!user.IsActive)
             {
                 return null;

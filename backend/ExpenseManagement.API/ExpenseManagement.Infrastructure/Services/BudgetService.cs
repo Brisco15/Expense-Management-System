@@ -88,26 +88,23 @@ namespace ExpenseManagement.Infrastructure.Services
             var monthStart = new DateTime(now.Year, now.Month, 1);
             var yearStart = new DateTime(now.Year, 1, 1);
 
-            var userExpensesQuery = _context.Expenses
-                .Where(e => e.CategoryId == categoryId && e.UserId == userId && e.Status != ExpenseStatus.Rejected);
+            // Single aggregation query instead of 6 separate round-trips
+            var agg = await _context.Expenses
+                .Where(e => e.CategoryId == categoryId && e.UserId == userId && e.Status != ExpenseStatus.Rejected)
+                .GroupBy(_ => 1)
+                .Select(g => new
+                {
+                    MonthlyExpense  = g.Sum(e => e.ExpenseDate >= monthStart ? e.Amount : 0m),
+                    YearlyExpense   = g.Sum(e => e.ExpenseDate >= yearStart  ? e.Amount : 0m),
+                    PendingCount    = g.Count(e => e.Status == ExpenseStatus.Pending),
+                    ApprovedCount   = g.Count(e => e.Status == ExpenseStatus.Approved),
+                    PendingAmount   = g.Sum(e => e.Status == ExpenseStatus.Pending  ? e.Amount : 0m),
+                    ApprovedAmount  = g.Sum(e => e.Status == ExpenseStatus.Approved ? e.Amount : 0m)
+                })
+                .FirstOrDefaultAsync();
 
-            var monthlyExpense = await userExpensesQuery
-                .Where(e => e.ExpenseDate >= monthStart)
-                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
-
-            var yearlyExpense = await userExpensesQuery
-                .Where(e => e.ExpenseDate >= yearStart)
-                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
-
-            var pendingCount = await userExpensesQuery.CountAsync(e => e.Status == ExpenseStatus.Pending);
-            var approvedCount = await userExpensesQuery.CountAsync(e => e.Status == ExpenseStatus.Approved);
-            var pendingAmount = await userExpensesQuery.Where(e => e.Status == ExpenseStatus.Pending).SumAsync(e => (decimal?)e.Amount) ?? 0m;
-            var approvedAmount = await userExpensesQuery.Where(e => e.Status == ExpenseStatus.Approved).SumAsync(e => (decimal?)e.Amount) ?? 0m;
-
-            var monthlyRemaining = category.MonthlyBudget.HasValue ? (category.MonthlyBudget.Value - monthlyExpense) : (decimal?)null;
-            var yearlyRemaining = category.YearlyBudget.HasValue ? (category.YearlyBudget.Value - yearlyExpense) : (decimal?)null;
-            var isMonthlyOver = category.MonthlyBudget.HasValue ? monthlyExpense > category.MonthlyBudget.Value : (bool?)null;
-            var isYearlyOver = category.YearlyBudget.HasValue ? yearlyExpense > category.YearlyBudget.Value : (bool?)null;
+            var monthlyExpense = agg?.MonthlyExpense ?? 0m;
+            var yearlyExpense  = agg?.YearlyExpense  ?? 0m;
 
             return new CategoryBudgetDto
             {
@@ -115,16 +112,16 @@ namespace ExpenseManagement.Infrastructure.Services
                 CategoryName = category.Name,
                 MonthlyBudget = category.MonthlyBudget,
                 MonthlyExpense = monthlyExpense,
-                RemainingMonthlyBudget = monthlyRemaining,
+                RemainingMonthlyBudget = category.MonthlyBudget.HasValue ? (category.MonthlyBudget.Value - monthlyExpense) : (decimal?)null,
                 YearlyBudget = category.YearlyBudget,
                 YearlyExpense = yearlyExpense,
-                RemainingYearlyBudget = yearlyRemaining,
-                IsMonthlyOverBudget = isMonthlyOver,
-                IsYearlyOverBudget = isYearlyOver,
-                PendingExpensesCount = pendingCount,
-                ApprovedExpensesCount = approvedCount,
-                PendingExpensesAmount = pendingAmount,
-                ApprovedExpensesAmount = approvedAmount
+                RemainingYearlyBudget = category.YearlyBudget.HasValue ? (category.YearlyBudget.Value - yearlyExpense) : (decimal?)null,
+                IsMonthlyOverBudget = category.MonthlyBudget.HasValue ? monthlyExpense > category.MonthlyBudget.Value : (bool?)null,
+                IsYearlyOverBudget  = category.YearlyBudget.HasValue  ? yearlyExpense  > category.YearlyBudget.Value  : (bool?)null,
+                PendingExpensesCount   = agg?.PendingCount  ?? 0,
+                ApprovedExpensesCount  = agg?.ApprovedCount ?? 0,
+                PendingExpensesAmount  = agg?.PendingAmount  ?? 0m,
+                ApprovedExpensesAmount = agg?.ApprovedAmount ?? 0m
             };
         }
 
@@ -142,18 +139,27 @@ namespace ExpenseManagement.Infrastructure.Services
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
 
-            // return updated snapshot
+            // return updated snapshot — single aggregation query
             var now = DateTime.UtcNow;
             var monthStart = new DateTime(now.Year, now.Month, 1);
             var yearStart = new DateTime(now.Year, 1, 1);
 
-            var monthlyExpense = await _context.Expenses
-                .Where(e => e.CategoryId == categoryId && e.Status != ExpenseStatus.Rejected && e.ExpenseDate >= monthStart)
-                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
+            var agg = await _context.Expenses
+                .Where(e => e.CategoryId == categoryId && e.Status != ExpenseStatus.Rejected)
+                .GroupBy(_ => 1)
+                .Select(g => new
+                {
+                    MonthlyExpense = g.Sum(e => e.ExpenseDate >= monthStart ? e.Amount : 0m),
+                    YearlyExpense  = g.Sum(e => e.ExpenseDate >= yearStart  ? e.Amount : 0m),
+                    PendingCount   = g.Count(e => e.Status == ExpenseStatus.Pending),
+                    ApprovedCount  = g.Count(e => e.Status == ExpenseStatus.Approved),
+                    PendingAmount  = g.Sum(e => e.Status == ExpenseStatus.Pending  ? e.Amount : 0m),
+                    ApprovedAmount = g.Sum(e => e.Status == ExpenseStatus.Approved ? e.Amount : 0m)
+                })
+                .FirstOrDefaultAsync();
 
-            var yearlyExpense = await _context.Expenses
-                .Where(e => e.CategoryId == categoryId && e.Status != ExpenseStatus.Rejected && e.ExpenseDate >= yearStart)
-                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
+            var monthlyExpense = agg?.MonthlyExpense ?? 0m;
+            var yearlyExpense  = agg?.YearlyExpense  ?? 0m;
 
             return new CategoryBudgetDto
             {
@@ -166,11 +172,11 @@ namespace ExpenseManagement.Infrastructure.Services
                 YearlyExpense = yearlyExpense,
                 RemainingYearlyBudget = category.YearlyBudget.HasValue ? (category.YearlyBudget.Value - yearlyExpense) : (decimal?)null,
                 IsMonthlyOverBudget = category.MonthlyBudget.HasValue ? monthlyExpense > category.MonthlyBudget.Value : (bool?)null,
-                IsYearlyOverBudget = category.YearlyBudget.HasValue ? yearlyExpense > category.YearlyBudget.Value : (bool?)null,
-                PendingExpensesCount = await _context.Expenses.CountAsync(e => e.CategoryId == categoryId && e.Status == ExpenseStatus.Pending),
-                ApprovedExpensesCount = await _context.Expenses.CountAsync(e => e.CategoryId == categoryId && e.Status == ExpenseStatus.Approved),
-                PendingExpensesAmount = await _context.Expenses.Where(e => e.CategoryId == categoryId && e.Status == ExpenseStatus.Pending).SumAsync(e => (decimal?)e.Amount) ?? 0m,
-                ApprovedExpensesAmount = await _context.Expenses.Where(e => e.CategoryId == categoryId && e.Status == ExpenseStatus.Approved).SumAsync(e => (decimal?)e.Amount) ?? 0m
+                IsYearlyOverBudget  = category.YearlyBudget.HasValue  ? yearlyExpense  > category.YearlyBudget.Value  : (bool?)null,
+                PendingExpensesCount   = agg?.PendingCount  ?? 0,
+                ApprovedExpensesCount  = agg?.ApprovedCount ?? 0,
+                PendingExpensesAmount  = agg?.PendingAmount  ?? 0m,
+                ApprovedExpensesAmount = agg?.ApprovedAmount ?? 0m
             };
         }
 
@@ -192,9 +198,10 @@ namespace ExpenseManagement.Infrastructure.Services
             var totalThisMonth = await userExpenses.Where(e => e.ExpenseDate >= monthStart).SumAsync(e => (decimal?)e.Amount) ?? 0m;
             var totalThisYear = await userExpenses.Where(e => e.ExpenseDate >= yearStart).SumAsync(e => (decimal?)e.Amount) ?? 0m;
 
-            var pendingExpenses = await userExpenses.Where(e => e.Status == ExpenseStatus.Pending).ToListAsync();
-            var pendingCount = pendingExpenses.Count;
-            var pendingAmount = pendingExpenses.Sum(e => e.Amount);
+            var pendingCount  = await userExpenses.CountAsync(e => e.Status == ExpenseStatus.Pending);
+            var pendingAmount = await userExpenses
+                .Where(e => e.Status == ExpenseStatus.Pending)
+                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
 
             // per-category budgets for this user (only categories that are active)
             var categories = await _context.Categories.Where(c => c.IsActive).ToListAsync();
