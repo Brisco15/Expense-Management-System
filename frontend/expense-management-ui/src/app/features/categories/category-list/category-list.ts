@@ -124,7 +124,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
     }
     const dialogRef = this.dialog.open(CreateCategory, {
       width: '400px',
-      height: '400px'
+      height: '300px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -139,8 +139,6 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
       const newCategory = {
         categoryName: result.categoryName,
         description: result.description,
-        monthlyBudget: result.monthlyBudget,
-        yearlyBudget: result.monthlyBudget * 12,
         totalExpenses: 0,
         totalAmount: 0,
         isActive: true,

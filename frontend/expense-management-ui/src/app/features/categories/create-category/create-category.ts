@@ -26,7 +26,7 @@ export class CreateCategory {
     this.form = this.formBuilder.group({
       categoryName: ['', [Validators.maxLength(50), Validators.required]],
       description: ['', [Validators.maxLength(100), Validators.required]],
-      monthlyBudget: [null, Validators.required],
+      
       
     })
   }
