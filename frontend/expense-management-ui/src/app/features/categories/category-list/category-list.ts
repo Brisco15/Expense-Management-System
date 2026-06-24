@@ -104,6 +104,26 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   }
 
   deleteCategory(category: CategoryExpense): void{
+    if(!this.isAdmin){
+      this.error.set('Only admins can delete category');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if(confirm(`Do you want to delete category ${category.categoryName}?`)){
+      this.categoryService.deleteCategory(category.categoryId).subscribe({
+        next: ()=> {
+          this.dataSource.data = this.dataSource.data.filter(c =>c.categoryId !== category.categoryId);
+          this.cdr.markForCheck();
+        },
+        error: ()=> {
+          this.error.set('Failed to delete user.');
+          this.cdr.markForCheck();
+        }
+      })
+    }
+
+    
 
   }
 

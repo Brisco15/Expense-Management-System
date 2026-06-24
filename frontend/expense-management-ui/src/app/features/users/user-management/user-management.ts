@@ -139,7 +139,7 @@ export class UserManagement implements OnInit, AfterViewInit {
     if(admin && user.role === 'Admin'){
       return;
     }
-    if(confirm(`Delete user ${user.fullName}?`)){
+    if(confirm(`Do you want to delete user ${user.fullName}?`)){
       this.userService.deleteUser(user.id).subscribe({
         next: ()=>{
           this.dataSource.data = this.dataSource.data.filter( u => u.id !== user.id);
