@@ -106,6 +106,7 @@
             </td>
         </ng-container>
 
+        
         <ng-container matColumnDef ="actions">
             <th mat-header-cell *matHeaderCellDef>
                 Actions
@@ -119,16 +120,22 @@
                     {{ category.isActive ? 'Deactivate' : 'Activate' }}
 
                     </button>
-                    <button mat-raised-button color="secondary" (click)="updateCategory(category)">
+                    <button mat-raised-button  (click)="updateCategory(category)">
                         Edit
                     </button>
-                    <button mat-raised-button color="warn" (click)="deleteCategory(category)">
+                    <button mat-raised-button style="background-color: rgb(192, 18, 18);" (click)="deleteCategory(category)">
                         Delete
                     </button>
+                    
+                    <button mat-raised-button  style=" background-color: #16a34a;" (click)="manageBudget()">
+                        Manage budget
+                    </button>
+                    
+
                 </div>
             </td>
         </ng-container>
-
+    
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     

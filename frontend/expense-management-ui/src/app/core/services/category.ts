@@ -24,7 +24,7 @@ export class CategoryService {
   }
 
   getCategoryById(id: number): Observable<CategoryExpense>{
-    return this.http.get<CategoryExpense>(this.apiUrl)
+    return this.http.get<CategoryExpense>(`${this.apiUrl}/${id}`)
   }
 
   createCategory(newCategory: CreateCategory ): Observable<CategoryExpense>{

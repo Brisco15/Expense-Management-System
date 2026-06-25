@@ -86,9 +86,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   private reconnectTableControls(): void {
     setTimeout(() => {
       this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      
-      
+      this.dataSource.paginator = this.paginator;     
     });
   }
 
@@ -203,6 +201,10 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
     })
 
 
+  }
+
+  manageBudget(){
+    
   }
 
   applyFilter(event: Event){
