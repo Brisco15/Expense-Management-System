@@ -1,2 +1,24 @@
 <h2>Update Category's Budget</h2>
+<form [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Monthly budget</mat-label>
+        <input matInput  type="number" formControlName="monthlyBudget" min="0">
+    
+    </mat-form-field>
 
+    <mat-form-field appearance="outline">
+        <mat-label>Yearly budget</mat-label>
+        <input matInput  type="number" formControlName="yearlyBudget" min="0">
+    
+    </mat-form-field>
+
+    <div class="buttons">
+        <button mat-raised-button style="background-color: rgb(21, 228, 31);color: aliceblue;" type="submit" [disabled]="form.invalid" (click)="onSave()">
+            Save
+        </button>
+        <button mat-raised-button style="background-color: rgb(228, 21, 21);color: aliceblue;" (click)="onCancel()">
+            Cancel
+        </button>
+    </div>
+    
+</form>

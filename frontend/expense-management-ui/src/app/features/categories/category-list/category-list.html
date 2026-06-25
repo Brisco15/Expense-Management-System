@@ -118,20 +118,19 @@
             <td mat-cell *matCellDef="let category">
                 <div class="action-buttons">
                     <button mat-raised-button
-                      [color]="category.isActive ? 'primary' : 'red'"
+                      [ngClass]="category.isActive ? 'btn-deactivate' : 'btn-activate'"
                       (click)="toggleCategoryStatus(category)"
                     >
                     {{ category.isActive ? 'Deactivate' : 'Activate' }}
-
                     </button>
-                    <button mat-raised-button  (click)="updateCategory(category)">
+                    <button mat-raised-button  style="color: #ffffff; background-color: gray;" (click)="updateCategory(category)">
                         Edit
                     </button>
-                    <button mat-raised-button style="background-color: rgb(192, 18, 18);" (click)="deleteCategory(category)">
+                    <button mat-raised-button style="background-color: rgb(192, 18, 18);  color: #ffffff;" (click)="deleteCategory(category)">
                         Delete
                     </button>
                     
-                    <button mat-raised-button  style=" background-color: #16a34a;" (click)="manageBudget(category)">
+                    <button mat-raised-button class="btn-budget" (click)="manageBudget(category)">
                         Manage budget
                     </button>
                     

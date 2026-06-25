@@ -240,8 +240,6 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
         categoryId: category.categoryId,
         monthlyBudget: result.monthlyBudget,
         yearlyBudget: result.yearlyBudget,
-        updatedAt: new Date().toISOString(),
-        isActivate: true
       };
 
       this.budgetService.updateCategoryBudget(category.categoryId, updatedCategoryBudget).subscribe({

@@ -128,6 +128,7 @@ mat-mdc-header-cell {
 .action-buttons {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -137,4 +138,31 @@ mat-mdc-header-cell {
   padding: 0 12px;
   height: 32px;
   line-height: 32px;
+}
+
+.btn-budget {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.btn-budget:hover {
+  background-color: #15803d !important;
+}
+
+.btn-activate {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.btn-activate:hover {
+  background-color: #15803d !important;
+}
+
+.btn-deactivate {
+  background-color: #2d2dbc !important;
+  color: #ffffff !important;
+}
+
+.btn-deactivate:hover {
+  background-color: #4f46e5 !important;
 }
