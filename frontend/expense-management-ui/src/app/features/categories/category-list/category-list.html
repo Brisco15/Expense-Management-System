@@ -29,6 +29,10 @@
     @if (error()){
         <p class="error-message">{{error()}}</p>
 
+    }@else {
+        @if(success()){
+            <p class="success-message">{{success()}}</p>
+        }
     }  
     
     <table mat-table [dataSource]="dataSource" [trackBy]="trackById" matSort>
@@ -127,7 +131,7 @@
                         Delete
                     </button>
                     
-                    <button mat-raised-button  style=" background-color: #16a34a;" (click)="manageBudget()">
+                    <button mat-raised-button  style=" background-color: #16a34a;" (click)="manageBudget(category)">
                         Manage budget
                     </button>
                     

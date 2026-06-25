@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
 import { CreateCategory } from '../create-category/create-category';
 import { AuthService } from '../../../core/services/auth';
 import { EditCategory } from '../edit-category/edit-category';
-
+import { UpdateCategoryBudget } from '../update-category-budget/update-category-budget';
+import { BudgetService } from '../../../core/services/budget';
 @Component({
   selector: 'app-category-list',
   imports: [
@@ -44,6 +45,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   dataSource = new MatTableDataSource<CategoryExpense>([]);
   loading = signal(false);
   error = signal('');
+  success = signal('');
   trackById = ( _index: number, category: CategoryExpense) => category.categoryId;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -63,7 +65,17 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private budgetService: BudgetService,
   ){}
+
+  private showSuccess(message: string): void {
+    this.success.set(message);
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.success.set('');
+      this.cdr.markForCheck();
+    }, 2000);
+  }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -182,8 +194,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
 
       this.categoryService.updateCategory(category.categoryId, updatedCategory).subscribe({
         next: ()=> {
-          alert(`Category was successfully updated.`);
-          
+          this.showSuccess('Category was successfully updated.');
           this.loadCategories();
         },
         error: (err: any)=>{
@@ -203,8 +214,49 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
 
   }
 
-  manageBudget(){
-    
+  manageBudget(category: CategoryExpense){
+    if(!this.isAdmin){
+      this.error.set('only admins can update budgets');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const dialogRef = this.dialog.open(UpdateCategoryBudget, {
+      width: '400px',
+      height: '300px',
+      data: { category }
+    });
+
+    dialogRef.afterClosed().subscribe(result =>{
+      if(!result) return;
+
+      const categoryToEdit = this.categories.find(c => c.categoryId === category.categoryId);
+      if(!categoryToEdit){
+        this.error.set('Category not found.');
+        return;
+      };
+
+      const updatedCategoryBudget = {
+        categoryId: category.categoryId,
+        monthlyBudget: result.monthlyBudget,
+        yearlyBudget: result.yearlyBudget,
+        updatedAt: new Date().toISOString(),
+        isActivate: true
+      };
+
+      this.budgetService.updateCategoryBudget(category.categoryId, updatedCategoryBudget).subscribe({
+        next: ()=>{
+          this.showSuccess('Budget was successfully updated.');
+          this.loadCategories();
+
+        },
+        error: ()=>{
+          this.error.set('failed to update the budget');
+          this.cdr.markForCheck();
+        }
+      })
+    })
+
   }
 
   applyFilter(event: Event){
@@ -249,7 +301,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
 
       this.categoryService.createCategory(newCategory).subscribe({
         next: () => {
-          alert('The new category was created successfully.');
+          this.showSuccess('Category was created successfully.');
           this.loadCategories();
         },
         error: (err: any) => {
