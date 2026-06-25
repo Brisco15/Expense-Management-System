@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { CategoryService } from '../../../core/services/category';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
-import { isActive, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { CreateCategory } from '../create-category/create-category';
 import { AuthService } from '../../../core/services/auth';
 import { EditCategory } from '../edit-category/edit-category';
@@ -49,6 +49,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
 
   readonly statuses = ['Active', 'Inactive'];
+  private searchText = '';
 
   http = inject(HttpClient);
   router = inject(Router);
@@ -71,12 +72,23 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = (data: CategoryExpense, _filter: string): boolean => {
+        const matchesSearch = !this.searchText ||
+          data.categoryName.toLowerCase().includes(this.searchText) ||
+          (data.description?.toLowerCase().includes(this.searchText) ?? false) ||
+          data.createdAt.toLowerCase().includes(this.searchText)  ||
+          (data.monthlyBudget?.toString().includes(this.searchText) ?? false);
+
+        return matchesSearch;
+    }
   }
 
   private reconnectTableControls(): void {
     setTimeout(() => {
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
+      
+      
     });
   }
 
@@ -194,7 +206,13 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
   }
 
   applyFilter(event: Event){
+    this.searchText = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.triggerFilter();
 
+  }
+
+  private triggerFilter(): void{
+    this.dataSource.filter = this.searchText ? '__active__' : '';
   }
 
   addCategory(){

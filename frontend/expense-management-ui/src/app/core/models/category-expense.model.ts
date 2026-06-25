@@ -2,7 +2,7 @@ export interface CategoryExpense {
     categoryId: number;
     categoryName: string;
     description?: string;
-    monthlyBudget: number;
+    monthlyBudget?: number | null;
     yearlyBudget?: number;
     totalExpenses: number;
     totalAmount: number;

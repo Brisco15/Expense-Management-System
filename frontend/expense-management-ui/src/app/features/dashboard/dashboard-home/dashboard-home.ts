@@ -41,7 +41,7 @@ export class DashboardHome implements OnInit {
   pieChartData = computed<ChartData<'doughnut'>>(() => ({
     labels: this.categoryExpenses().map(e => e.categoryName),
     datasets: [{
-      data: this.categoryExpenses().map(e => e.monthlyBudget),
+      data: this.categoryExpenses().map(e => e.totalAmount),
       backgroundColor: ['#6366f1','#06b6d4','#f59e0b','#10b981','#f43f5e','#8b5cf6'],
       hoverOffset: 6,
     }]
