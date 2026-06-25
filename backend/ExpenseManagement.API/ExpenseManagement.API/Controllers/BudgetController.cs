@@ -71,7 +71,7 @@ namespace ExpenseManagement.API.Controllers
             return Ok(budget);
         }
 
-        [HttpPut("categories/{categoryId}")]
+        [HttpPut("category/{categoryId}")]
         [Authorize(Policy ="AdminOnly")]
         public async Task<IActionResult> UpdateCategorybudget(int categoryId,[FromBody] UpdateCategoryBudgetDto updateCategoryBudgetDto)
         {
