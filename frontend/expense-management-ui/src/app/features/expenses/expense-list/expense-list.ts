@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/user.model';
 import { UpdateExpenseStatus } from '../update-expense-status/update-expense-status';
+import { EditExpense } from '../edit-expense/edit-expense';
 
 
 @Component({
@@ -228,13 +229,87 @@ export class ExpenseList implements OnInit, AfterViewInit {
   }
 
   //TODO
-  editExpense(id: number){
+  editExpense(expense: Expense){
+    if(this.isEmployee){
+      this.error.set('Only admins can update expense. ');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const dialogRef = this.dialog.open(EditExpense, {
+      width: '400px',
+      height: '500px',
+      data: { expense, categories: this.categories() }
+    });
+
+    dialogRef.afterClosed().subscribe(result =>{
+      if(!result) return;
+
+      const updatedExpense = {
+        id: expense.id,
+        title: result.title,
+        description: result.description,
+        amount: result.amount,
+        categoryId: result.categoryId,
+        updatedAt: new Date().toISOString(),
+        expenseDate: expense.expenseDate,
+        createdBy: expense.createdBy,
+        status: expense.status
+      }
+
+      this.expenseService.update(expense.id, updatedExpense).subscribe({
+        next: ()=> {
+          this.showSuccess(`Expense was succesfully '${result.title}' updated`);
+          this.loadExpenses();
+        },
+        error: (err: any)=>{
+          if(err.status === 409){
+            this.error.set( `An expense with this '${result.title}' already exists.` )
+          } else if(err.status === 400) {
+            const msg = typeof err.error === 'string' ? err.error : 'Invalid data. Please check your inputs.';
+            this.error.set(msg);
+          } else {
+            this.error.set('Failed to edit expense. Please try again.')
+          }
+          this.cdr.markForCheck();
+        }
+      })
+
+      
+
+
+    })
+
+
     
+
+
+
 
   }
 
-  //TODO
-  deleteExpense(id: number){
+  
+  deleteExpense(expense: Expense){
+    if(!this.isAdmin){
+      this.error.set('Only admins can delete expense.');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if(confirm(`Do you want to delete "${expense.title}"?`)){
+      this.expenseService.delete(expense.id).subscribe({
+        next: ()=> {
+          this.showSuccess('Expense was successfully deleted.')
+          this.dataSource.data = this.dataSource.data.filter(e =>e.id !== expense.id);
+          this.cdr.markForCheck();
+        },
+        error: ()=> {
+          this.error.set('Failed to delete expense.');
+          this.cdr.markForCheck();
+        }
+      })
+
+    }
 
 
   }

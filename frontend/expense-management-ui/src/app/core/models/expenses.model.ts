@@ -6,5 +6,6 @@ export interface Expense {
     status: string;
     description?: string;
     category: string;
+    categoryId: number;
     createdBy: string;
 }

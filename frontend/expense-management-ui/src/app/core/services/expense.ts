@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Expense } from '../models/expenses.model';
 import { CreateExpense } from '../models/create-expense.model';
 import { ApproveExpense } from '../models/approve-expense.model';
+import { EditExpense } from '../models/edit-expense.model';
 import { PagedResult } from '../models/paged-result.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -40,8 +41,8 @@ export class ExpenseService {
     return this.http.post<Expense>(`${this.apiUrl}/${id}/approve`, approvedExpense);
   }
 
-  update( id: number, dto: Expense): Observable<any> {
-    return this.http.put<Expense>(`${this.apiUrl}/${id}`, dto);
+  update( id: number, updatedExpense: EditExpense): Observable<any> {
+    return this.http.put<Expense>(`${this.apiUrl}/${id}`, updatedExpense);
   }
 
   delete(id: number): Observable<void> {

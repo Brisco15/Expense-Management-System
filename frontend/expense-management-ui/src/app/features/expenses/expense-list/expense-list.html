@@ -121,10 +121,10 @@
             </th>
             <td mat-cell *matCellDef="let expense">
                 <div class="action-buttons">
-                    <button mat-raised-button color="primary" (click)="editExpense(expense.id)">
+                    <button mat-raised-button color="primary" (click)="editExpense(expense)" [disabled]="expense.status !== 'Pending'">
                         Edit
                     </button>
-                    <button mat-raised-button color="warn" (click)="deleteExpense(expense.id)">
+                    <button mat-raised-button color="warn" (click)="deleteExpense(expense)">
                         Delete
                     </button>
                     <button mat-raised-button class="btn-budget" (click)="manageExpense(expense)">

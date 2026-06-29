@@ -179,6 +179,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
       if(!result) return;
 
       const categoryToEdit = this.categories.find(c => c.categoryId === category.categoryId);
+    
       if(!categoryToEdit){
         this.error.set('Category not found.');
         return;
