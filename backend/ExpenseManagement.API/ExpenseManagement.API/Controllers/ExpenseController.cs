@@ -125,6 +125,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpPost("{id}/receipt")]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> UploadReceipt(int id, IFormFile receipt)
         {
             if (receipt == null || receipt.Length == 0)
@@ -189,21 +190,32 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOrManager")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateExpenseDto updateExpenseDto)
         {
             if(id != updateExpenseDto.Id)
             {
                 return BadRequest("Expense ID mismatch.");
             }
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var expense = await _expenseService.UpdateExpenseAsync(updateExpenseDto, userId);
-
-            if (expense == null)
+            try
             {
-                return NotFound("Failed to update expense.");
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("Manager");
+                var expense = await _expenseService.UpdateExpenseAsync(updateExpenseDto, userId, isAdminOrManager);
+                return Ok(expense);
             }
-
-            return Ok(expense);
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return NotFound("Expense not found.");
+            }
         }
 
         [HttpDelete("{id}")]
@@ -219,6 +231,8 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpDelete("{id}/receipt")]
+        [Authorize(Policy = "AdminOnly")]
+
         public async Task<IActionResult> DeleteReceipt(int id)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

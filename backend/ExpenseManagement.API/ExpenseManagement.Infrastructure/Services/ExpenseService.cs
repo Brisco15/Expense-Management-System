@@ -226,7 +226,7 @@ namespace ExpenseManagement.Infrastructure.Services
 
         /*    Update Method     */
 
-        public async Task<ExpenseDto> UpdateExpenseAsync(UpdateExpenseDto updateExpenseDto, int userId)
+        public async Task<ExpenseDto> UpdateExpenseAsync(UpdateExpenseDto updateExpenseDto, int userId, bool isAdminOrManager = false)
         {
             var expense = await _context.Expenses.FindAsync(updateExpenseDto.Id);
 
@@ -235,7 +235,7 @@ namespace ExpenseManagement.Infrastructure.Services
                 throw new Exception("Expense not found."); 
             }
 
-            if (expense.UserId != userId) 
+            if (!isAdminOrManager && expense.UserId != userId) 
             { 
                 throw new UnauthorizedAccessException("Unauthorized to update this expense."); 
             }

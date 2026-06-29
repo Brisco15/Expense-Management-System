@@ -10,7 +10,7 @@ namespace ExpenseManagement.Application.Interfaces
         Task<List<ExpenseDto>> GetUserExpensesAsync(int userId);
         Task<ExpenseDto> CreateExpenseAsync( CreateExpenseDto createExpenseDto,int userId );
 
-        Task<ExpenseDto> UpdateExpenseAsync(UpdateExpenseDto updateExpenseDto,int userId);
+        Task<ExpenseDto> UpdateExpenseAsync(UpdateExpenseDto updateExpenseDto, int userId, bool isAdminOrManager = false);
         
         Task<string?> UploadReceiptAsync(int id, Stream receiptStream, string fileName,int userId);
 
