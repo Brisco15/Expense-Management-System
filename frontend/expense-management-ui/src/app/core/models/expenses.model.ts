@@ -6,5 +6,5 @@ export interface Expense {
     status: string;
     description?: string;
     category: string;
-    user: string;
+    createdBy: string;
 }

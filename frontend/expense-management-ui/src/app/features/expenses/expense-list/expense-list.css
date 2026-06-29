@@ -56,6 +56,22 @@ mat-progress-spinner {
   font-size: 0.875rem;
 }
 
+@keyframes fadeOutSuccess {
+  0%, 75% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+.success-message {
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  animation: fadeOutSuccess 2s ease-in-out forwards;
+}
+
 /* Table Container */
 .table-container {
   padding: 24px;

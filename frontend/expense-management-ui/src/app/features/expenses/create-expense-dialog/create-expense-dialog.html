@@ -1,1 +1,38 @@
-<p>create-expense-dialog works!</p>
+<h2>Create an expense</h2>
+<form [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput type="text" formControlName="title" maxlength="50">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input matInput  type="text" formControlName="description" maxlength="100">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input matInput  type="number" formControlName="amount" min="0.01">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+            @for (cat of categories; track cat.categoryId){
+                <mat-option [value]="cat.categoryId">{{cat.categoryName}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <div class="buttons">
+        <button mat-raised-button style="background-color: rgb(21, 228, 31);color: aliceblue;" type="submit" [disabled]="form.invalid" (click)="onCreate()">
+            Create
+        </button>
+        <button mat-raised-button style="background-color: rgb(228, 21, 21);color: aliceblue;" (click)="onCancel()">
+            Cancel
+        </button>
+    </div>
+    
+</form>
+
+    

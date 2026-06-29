@@ -31,8 +31,8 @@ export class ExpenseService {
     return this.http.get<Expense[]>(`${this.apiUrl}/user`);
   }
 
-  create( dto: CreateExpense):Observable<Expense> {
-    return this.http.post<Expense>(this.apiUrl, dto);
+  create( newExpense: CreateExpense):Observable<Expense> {
+    return this.http.post<Expense>(this.apiUrl, newExpense);
   }
 
   update( id: number, dto: Expense): Observable<any> {

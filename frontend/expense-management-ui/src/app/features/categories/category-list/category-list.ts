@@ -284,7 +284,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
 
       const categoryExists = this.categories.some(c => c.categoryName === result.categoryName);
       if (categoryExists) {
-        alert(`A category with '${result.categoryName}' already exists.`);
+        this.error.set(`A category with '${result.categoryName}' already exists.`);
         return;
       }
 
