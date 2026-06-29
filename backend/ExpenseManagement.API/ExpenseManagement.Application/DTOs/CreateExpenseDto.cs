@@ -5,7 +5,7 @@ namespace ExpenseManagement.Application.DTOs
     public class CreateExpenseDto
     {
         [Required(ErrorMessage = "Title is required")]
-        [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters")]
+        [MaxLength(50, ErrorMessage = "Title cannot exceed 50 characters")]
         public string Title { get; set; } = string.Empty;
 
         [Required]
@@ -16,7 +16,7 @@ namespace ExpenseManagement.Application.DTOs
         [DataType(DataType.Date)]
         public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;
 
-        [MaxLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
+        [MaxLength(100, ErrorMessage = "Description cannot exceed 100 characters")]
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Category is required")]
