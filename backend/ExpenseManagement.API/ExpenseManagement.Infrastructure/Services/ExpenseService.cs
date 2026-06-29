@@ -247,7 +247,6 @@ namespace ExpenseManagement.Infrastructure.Services
 
             expense.Title = updateExpenseDto.Title;
             expense.Amount = updateExpenseDto.Amount;
-            expense.ExpenseDate = updateExpenseDto.ExpenseDate;
             expense.Description = updateExpenseDto.Description;
             expense.CategoryId = updateExpenseDto.CategoryId;
             expense.UpdatedAt = DateTime.UtcNow;
