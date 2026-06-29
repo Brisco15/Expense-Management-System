@@ -216,7 +216,7 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
 
   manageBudget(category: CategoryExpense){
     if(!this.isAdmin){
-      this.error.set('only admins can update budgets');
+      this.error.set('Only admins can update budgets');
       this.cdr.markForCheck();
       return;
     }
@@ -230,8 +230,8 @@ export class CategoryList implements OnInit, AfterViewInit,OnDestroy {
     dialogRef.afterClosed().subscribe(result =>{
       if(!result) return;
 
-      const categoryToEdit = this.categories.find(c => c.categoryId === category.categoryId);
-      if(!categoryToEdit){
+      const categoryToManage = this.categories.find(c => c.categoryId === category.categoryId);
+      if(!categoryToManage){
         this.error.set('Category not found.');
         return;
       };

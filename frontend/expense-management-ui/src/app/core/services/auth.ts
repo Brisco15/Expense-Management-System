@@ -19,6 +19,8 @@ export class AuthService {
 
   isAdmin = computed(()=> this.user()?.role === 'Admin');
 
+  isEmployee = computed(()=>this.user()?.role === 'Employee');
+
   constructor(private http: HttpClient){
     this.loadUserFromStorage();
   }

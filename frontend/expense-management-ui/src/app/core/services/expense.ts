@@ -3,6 +3,7 @@ import { environment } from '../../../environment';
 import { HttpClient } from '@angular/common/http';
 import { Expense } from '../models/expenses.model';
 import { CreateExpense } from '../models/create-expense.model';
+import { ApproveExpense } from '../models/approve-expense.model';
 import { PagedResult } from '../models/paged-result.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -33,6 +34,10 @@ export class ExpenseService {
 
   create( newExpense: CreateExpense):Observable<Expense> {
     return this.http.post<Expense>(this.apiUrl, newExpense);
+  }
+
+  approve(id: number, approvedExpense: ApproveExpense){
+    return this.http.post<Expense>(`${this.apiUrl}/${id}/approve`, approvedExpense);
   }
 
   update( id: number, dto: Expense): Observable<any> {

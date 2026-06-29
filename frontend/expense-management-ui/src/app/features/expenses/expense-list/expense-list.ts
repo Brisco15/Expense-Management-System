@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/user.model';
+import { UpdateExpenseStatus } from '../update-expense-status/update-expense-status';
 
 
 @Component({
@@ -47,6 +48,7 @@ export class ExpenseList implements OnInit, AfterViewInit {
   loading = signal(false);
   error = signal('');
   success = signal('');
+  trackById = ( _index: number, expense: Expense) => expense.id;
   http = inject(HttpClient);
   router = inject(Router);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -59,6 +61,14 @@ export class ExpenseList implements OnInit, AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
   private searchText = '';
   private categoryFilter = '';
+
+  get isAdmin(): boolean{
+    return this.authService.isAdmin()
+  }
+
+  get isEmployee():boolean{
+    return this.authService.isEmployee()
+  }
 
   constructor(
     private dialog: MatDialog
@@ -137,7 +147,6 @@ export class ExpenseList implements OnInit, AfterViewInit {
       : '';
   }
   
-  //TODO
   addExpense(){
     const dialogRef = this.dialog.open(CreateExpenseDialog, {
       width: '400px',
@@ -182,17 +191,51 @@ export class ExpenseList implements OnInit, AfterViewInit {
         }
        })
     })
+  }
 
+  manageExpense(expense: Expense){
+    if(this.isEmployee){
+      this.error.set('Only admins & managers can manage the expenses.');
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const dialogRef = this.dialog.open(UpdateExpenseStatus, {
+      width: '400px',
+      data: { expense }
+    });
+
+    dialogRef.afterClosed().subscribe(result =>{
+      if(!result) return;
+
+      const approvedExpense = {
+        expenseId: expense.id,
+        isApproved: result.isApproved,
+        rejectionReason: result.rejectionReason
+      };
+      this.expenseService.approve(expense.id, approvedExpense ).subscribe({
+        next: ()=> {
+          this.showSuccess('status was successfully updated.');
+          this.loadExpenses();
+        },
+        error: ()=>{
+          this.error.set('Failed to update the satus of the expense.');
+          this.cdr.markForCheck();
+        }
+      })
+    })
 
   }
 
   //TODO
   editExpense(id: number){
+    
 
   }
 
   //TODO
   deleteExpense(id: number){
+
 
   }
 

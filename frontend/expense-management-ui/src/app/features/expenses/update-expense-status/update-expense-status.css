@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  padding: 16px 20px 8px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+}
+
+p {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
