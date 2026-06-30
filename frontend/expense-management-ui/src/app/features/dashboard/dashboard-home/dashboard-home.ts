@@ -58,6 +58,16 @@ export class DashboardHome implements OnInit {
     plugins: { legend: { position: 'bottom' } }
   };
 
+  budgetCategories = computed(() =>
+    this.categoryExpenses()
+      .filter(c => c.monthlyBudget != null && c.monthlyBudget > 0)
+      .map(c => ({
+        ...c,
+        usedPercent: Math.min(100, Math.round((c.totalAmount / c.monthlyBudget!) * 100)),
+        isOverBudget: c.totalAmount > c.monthlyBudget!
+      }))
+  );
+
   ngOnInit(): void {
     this.loading.set(true);
 

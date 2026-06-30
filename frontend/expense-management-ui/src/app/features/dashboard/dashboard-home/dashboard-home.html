@@ -18,28 +18,38 @@
         <mat-icon>euro</mat-icon>
       </div>
       <div class="stat-body">
-        <span class="stat-label">Total Expenses</span>
+        <span class="stat-label">All-Time Total</span>
         <span class="stat-value">&euro; {{ summary()?.totalExpenses | number:'1.2-2' }}</span>
       </div>
     </mat-card>
 
     <mat-card class="stat-card">
-      <div class="stat-icon" style="background: rgba(16,185,129,0.12); color: #10b981">
-        <mat-icon>receipt_long</mat-icon>
+      <div class="stat-icon" style="background: rgba(6,182,212,0.12); color: #06b6d4">
+        <mat-icon>calendar_today</mat-icon>
       </div>
       <div class="stat-body">
-        <span class="stat-label">Total Count</span>
-        <span class="stat-value">{{ summary()?.totalExpenseCount }}</span>
+        <span class="stat-label">This Month</span>
+        <span class="stat-value">&euro; {{ summary()?.totalExpensesThisMonth | number:'1.2-2' }}</span>
       </div>
     </mat-card>
 
     <mat-card class="stat-card">
-      <div class="stat-icon" style="background: rgba(6,182,212,0.12); color: #06b6d4">
+      <div class="stat-icon" style="background: rgba(139,92,246,0.12); color: #8b5cf6">
+        <mat-icon>date_range</mat-icon>
+      </div>
+      <div class="stat-body">
+        <span class="stat-label">This Year</span>
+        <span class="stat-value">&euro; {{ summary()?.totalExpensesThisYear | number:'1.2-2' }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background: rgba(16,185,129,0.12); color: #10b981">
         <mat-icon>check_circle</mat-icon>
       </div>
       <div class="stat-body">
         <span class="stat-label">Approved</span>
-        <span class="stat-value">{{ summary()?.approvedExpenses }}</span>
+        <span class="stat-value">&euro; {{ summary()?.approvedExpenses | number:'1.2-2' }}</span>
       </div>
     </mat-card>
 
@@ -49,7 +59,17 @@
       </div>
       <div class="stat-body">
         <span class="stat-label">Pending</span>
-        <span class="stat-value">{{ summary()?.pendingExpenses }}</span>
+        <span class="stat-value">&euro; {{ summary()?.pendingExpenses | number:'1.2-2' }}</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon" style="background: rgba(244,63,94,0.12); color: #f43f5e">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="stat-body">
+        <span class="stat-label">Rejected</span>
+        <span class="stat-value">&euro; {{ summary()?.rejectedExpenses | number:'1.2-2' }}</span>
       </div>
     </mat-card>
 
@@ -81,6 +101,64 @@
           [options]="pieChartOptions"
           [type]="'doughnut'">
         </canvas>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Bottom Row: Budget Utilization + Recent Expenses -->
+  <div class="bottom-grid">
+
+    <mat-card class="budget-card">
+      <mat-card-header>
+        <mat-card-title>Monthly Budget Utilization</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (budgetCategories().length === 0) {
+          <p class="empty-msg">No monthly budgets have been set.</p>
+        } @else {
+          @for (cat of budgetCategories(); track cat.categoryId) {
+            <div class="budget-row">
+              <div class="budget-label-row">
+                <span class="budget-cat-name">{{ cat.categoryName }}</span>
+                <span class="budget-amounts" [class.over-text]="cat.isOverBudget">
+                  &euro;{{ cat.totalAmount | number:'1.0-0' }} / &euro;{{ cat.monthlyBudget | number:'1.0-0' }}
+                  @if (cat.isOverBudget) { <span class="over-badge">Over budget</span> }
+                </span>
+              </div>
+              <div class="budget-bar-track">
+                <div class="budget-bar-fill" [class.over]="cat.isOverBudget" [style.width.%]="cat.usedPercent"></div>
+              </div>
+            </div>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="recent-card">
+      <mat-card-header>
+        <mat-card-title>Recent Expenses</mat-card-title>
+        <span class="total-count">{{ summary()?.totalExpenseCount }} total</span>
+      </mat-card-header>
+      <mat-card-content>
+        @if (!summary()?.recentExpenses?.length) {
+          <p class="empty-msg">No expenses yet.</p>
+        } @else {
+          <div class="recent-list">
+            @for (item of summary()?.recentExpenses ?? []; track item.id) {
+              <div class="recent-item">
+                <div class="recent-info">
+                  <span class="recent-title">{{ item.title }}</span>
+                  <span class="recent-meta">{{ item.category }} &middot; {{ item.createdBy }}</span>
+                </div>
+                <div class="recent-right">
+                  <span class="recent-amount">&euro;{{ item.amount | number:'1.2-2' }}</span>
+                  <span class="status-badge" [ngClass]="'status-' + item.status.toLowerCase()">{{ item.status }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </mat-card-content>
     </mat-card>
 
