@@ -45,6 +45,12 @@ export class ExpenseService {
     return this.http.put<Expense>(`${this.apiUrl}/${id}`, updatedExpense);
   }
 
+  uploadReceipt(id: number, file: File): Observable<{ receiptPath: string }> {
+    const formData = new FormData();
+    formData.append('receipt', file, file.name);
+    return this.http.post<{ receiptPath: string }>(`${this.apiUrl}/${id}/receipt`, formData);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

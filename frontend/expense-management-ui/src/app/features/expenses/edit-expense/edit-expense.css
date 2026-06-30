@@ -23,3 +23,40 @@ mat-form-field {
   gap: 10px;
   margin-top: 8px;
 }
+
+.receipt-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 10px;
+  margin-bottom: 4px;
+}
+
+.receipt-label {
+  font-size: 0.75rem;
+  color: var(--text-color, #555);
+}
+
+.current-receipt {
+  font-size: 0.75rem;
+  color: #1976d2;
+  word-break: break-all;
+}
+
+.file-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border: 1px dashed #1976d2;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #1976d2;
+  width: fit-content;
+  transition: background 0.15s;
+}
+
+.file-picker-btn:hover {
+  background: rgba(25, 118, 210, 0.06);
+}

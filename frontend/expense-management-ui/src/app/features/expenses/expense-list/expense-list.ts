@@ -238,7 +238,7 @@ export class ExpenseList implements OnInit, AfterViewInit {
 
     const dialogRef = this.dialog.open(EditExpense, {
       width: '400px',
-      height: '500px',
+      height: '550px',
       data: { expense, categories: this.categories() }
     });
 
@@ -259,8 +259,21 @@ export class ExpenseList implements OnInit, AfterViewInit {
 
       this.expenseService.update(expense.id, updatedExpense).subscribe({
         next: ()=> {
-          this.showSuccess(`Expense was succesfully '${result.title}' updated`);
-          this.loadExpenses();
+          if (result.receiptFile) {
+            this.expenseService.uploadReceipt(expense.id, result.receiptFile).subscribe({
+              next: () => {
+                this.showSuccess(`'${result.title}' updated with receipt.`);
+                this.loadExpenses();
+              },
+              error: () => {
+                this.showSuccess(`'${result.title}' updated, but receipt upload failed.`);
+                this.loadExpenses();
+              }
+            });
+          } else {
+            this.showSuccess(`Expense '${result.title}' successfully updated.`);
+            this.loadExpenses();
+          }
         },
         error: (err: any)=>{
           if(err.status === 409){

@@ -20,6 +20,9 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class EditExpense {
   form!: FormGroup;
+  selectedFile: File | null = null;
+  selectedFileName = '';
+  readonly allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
   constructor(
     private dialogRef: MatDialogRef<EditExpense>,
@@ -53,6 +56,27 @@ export class EditExpense {
     this.dialogRef.close();
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!this.allowedTypes.includes(file.type)) {
+      input.value = '';
+      this.selectedFile = null;
+      this.selectedFileName = 'Invalid type. Only JPG, PNG, PDF allowed.';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      input.value = '';
+      this.selectedFile = null;
+      this.selectedFileName = 'File exceeds 5MB limit.';
+      return;
+    }
+    this.selectedFile = file;
+    this.selectedFileName = file.name;
+  }
+
   onSave(): void {
     if(!this.form.valid){
       this.form.markAllAsTouched();
@@ -70,7 +94,8 @@ export class EditExpense {
       expenseDate: this.data.expense.expenseDate,
       status: this.data.expense.status,
       createdBy: this.data.expense.createdBy,
-      category: this.data.expense.category
+      category: this.data.expense.category,
+      receiptFile: this.selectedFile
     };
 
     this.dialogRef.close(result)

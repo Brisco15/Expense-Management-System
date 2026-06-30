@@ -8,4 +8,6 @@ export interface Expense {
     category: string;
     categoryId: number;
     createdBy: string;
+    hasReceipt?: boolean;
+    receiptFileName?: string;
 }
