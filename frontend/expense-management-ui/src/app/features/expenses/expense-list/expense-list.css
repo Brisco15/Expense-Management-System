@@ -123,6 +123,10 @@ td[mat-cell].mat-column-status span {
   font-weight: 600;
 }
 
+.status-approved { background: rgba(34, 197, 94, 0.12);  color: #16a34a; }
+.status-rejected { background: rgba(239, 68, 68, 0.1);   color: #dc2626; }
+.status-pending  { background: rgba(234, 179, 8, 0.12);  color: #b45309; }
+
 /* Actions column */
 td[mat-cell].mat-column-actions {
   white-space: nowrap;
@@ -133,6 +137,41 @@ td[mat-cell].mat-column-actions {
   gap: 8px;
   align-items: center;
 }
+
+.btn-edit{
+  background-color: rgb(130, 129, 129) !important;
+  color: #ffffff !important;
+}
+
+.btn-edit:hover{
+  background-color: rgb(103, 103, 103) !important;
+  color: #ffffff !important;
+}
+
+.btn-edit:disabled{
+  background-color: rgb(207, 207, 207) !important;
+  color: rgb(122, 120, 120) !important;
+}
+
+.btn-delete{
+  background-color: rgb(192, 18, 18) !important;  
+  color: #ffffff !important; 
+}
+
+.btn-delete:hover{
+  background-color: rgb(184, 58, 58) !important;  
+  color: #ffffff !important; 
+}
+
+.btn-budget {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.btn-budget:hover {
+  background-color: #15803d !important;
+}
+
 
 /* Paginator */
 mat-paginator {

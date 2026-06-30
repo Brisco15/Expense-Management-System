@@ -140,6 +140,26 @@ mat-mdc-header-cell {
   line-height: 32px;
 }
 
+.btn-edit{
+  background-color: rgb(130, 129, 129) !important;
+  color: #ffffff !important;
+}
+
+.btn-edit:hover{
+  background-color: rgb(103, 103, 103) !important;
+  color: #ffffff !important;
+}
+
+.btn-delete{
+  background-color: rgb(192, 18, 18) !important;  
+  color: #ffffff !important; 
+}
+
+.btn-delete:hover{
+  background-color: rgb(184, 58, 58) !important;  
+  color: #ffffff !important; 
+}
+
 .btn-budget {
   background-color: #16a34a !important;
   color: #ffffff !important;

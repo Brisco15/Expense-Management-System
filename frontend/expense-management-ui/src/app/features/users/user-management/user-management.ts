@@ -7,7 +7,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from '../../../core/services/auth';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -44,6 +45,8 @@ export class UserManagement implements OnInit, AfterViewInit {
   readonly roles: UserRole[] = ['Admin', 'Manager', 'Employee'];
   readonly statuses = ['Active', 'Inactive'];
 
+  private router = inject(Router);
+  private http = inject(HttpClient);
   private searchText = '';
   private roleFilter = '';
   private statusFilter = '';
@@ -120,6 +123,13 @@ export class UserManagement implements OnInit, AfterViewInit {
         this.dataSource.data = this.dataSource.data.map(u =>
           u.id === user.id ? { ...u, role: newRole } : u
         );
+
+        if (this.authService.user()?.email === user.email) {
+          this.authService.logout();
+          
+          return;
+        }
+
         this.cdr.markForCheck();
       },
       error: ()=>{
@@ -169,7 +179,6 @@ export class UserManagement implements OnInit, AfterViewInit {
   }
 
   private triggerFilter(): void {
-    // dataSource only runs filterPredicate when filter string is non-empty
     this.dataSource.filter = (this.searchText || this.roleFilter || this.statusFilter)
       ? '__active__'
       : '';

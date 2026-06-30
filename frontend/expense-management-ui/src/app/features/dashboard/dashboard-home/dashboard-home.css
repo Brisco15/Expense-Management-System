@@ -1,4 +1,4 @@
-/* Loading / Error */
+
 .loading-state,
 .error-state {
   display: flex;
@@ -17,7 +17,6 @@
   color: #f43f5e;
 }
 
-/* Stat Cards */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -77,7 +76,7 @@
   line-height: 1;
 }
 
-/* Charts */
+
 .charts-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -103,7 +102,7 @@
   }
 }
 
-/* ── Bottom grid ───────────────────────────────────────────── */
+
 .bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -122,7 +121,7 @@
   padding: 4px 20px 16px;
 }
 
-/* ── Budget bars ───────────────────────────────────────────── */
+
 .budget-row {
   margin-bottom: 14px;
 }
@@ -179,7 +178,7 @@
   background: #f43f5e;
 }
 
-/* ── Recent expenses ───────────────────────────────────────── */
+
 .recent-card mat-card-header {
   display: flex;
   align-items: center;
@@ -249,9 +248,9 @@
   white-space: nowrap;
 }
 
-.status-pending  { background: rgba(245,158,11,0.12); color: #f59e0b; }
-.status-approved { background: rgba(16,185,129,0.12);  color: #10b981; }
-.status-rejected { background: rgba(244,63,94,0.12);   color: #f43f5e; }
+.status-pending  { background: rgba(234, 179, 8, 0.12);  color: #b45309; }
+.status-approved { background: rgba(34, 197, 94, 0.12);   color: #16a34a; }
+.status-rejected { background: rgba(239, 68, 68, 0.1);    color: #dc2626; }
 
 .empty-msg {
   color: #94a3b8;

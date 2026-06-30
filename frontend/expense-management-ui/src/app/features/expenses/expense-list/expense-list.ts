@@ -45,21 +45,27 @@ export class ExpenseList implements OnInit, AfterViewInit {
   ];
 
   expenses: Expense[] = [];
+  categories = signal<CategoryExpense[]>([]);
+  users = signal<User[]>([]);
   dataSource = new MatTableDataSource<Expense>([]);
   loading = signal(false);
   error = signal('');
   success = signal('');
+  
   trackById = ( _index: number, expense: Expense) => expense.id;
   http = inject(HttpClient);
   router = inject(Router);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  readonly statuses = ['Pending','Approved','Rejected' ];
+
   private expenseService = inject(ExpenseService);
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
-  categories = signal<CategoryExpense[]>([]);
-  users = signal<User[]>([]);
   private cdr = inject(ChangeDetectorRef);
+
+  private statusFilter = '';
   private searchText = '';
   private categoryFilter = '';
 
@@ -101,7 +107,10 @@ export class ExpenseList implements OnInit, AfterViewInit {
       const matchesCategory = !this.categoryFilter ||
         data.category.toLowerCase() === this.categoryFilter;
 
-      return matchesSearch && matchesCategory;
+      const matchesStatus = !this.statusFilter || 
+        data.status.toLowerCase() == this.statusFilter;
+
+      return matchesSearch && matchesCategory && matchesStatus;
     }
   }
   
@@ -142,8 +151,13 @@ export class ExpenseList implements OnInit, AfterViewInit {
     this.triggerFilter();
   }
 
+  filterByStatus(status: string){
+    this.statusFilter = status.toLowerCase();
+    this.triggerFilter();
+  }
+
   private triggerFilter(): void{
-    this.dataSource.filter = (this.searchText || this.categoryFilter)
+    this.dataSource.filter = (this.searchText || this.categoryFilter || this.statusFilter)
       ? '__active__' 
       : '';
   }
@@ -228,7 +242,6 @@ export class ExpenseList implements OnInit, AfterViewInit {
 
   }
 
-  //TODO
   editExpense(expense: Expense){
     if(this.isEmployee){
       this.error.set('Only admins can update expense. ');

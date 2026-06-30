@@ -123,10 +123,10 @@
                     >
                     {{ category.isActive ? 'Deactivate' : 'Activate' }}
                     </button>
-                    <button mat-raised-button  style="color: #ffffff; background-color: gray;" (click)="updateCategory(category)">
+                    <button mat-raised-button  class="btn-edit" (click)="updateCategory(category)">
                         Edit
                     </button>
-                    <button mat-raised-button style="background-color: rgb(192, 18, 18);  color: #ffffff;" (click)="deleteCategory(category)">
+                    <button mat-raised-button class="btn-delete" (click)="deleteCategory(category)">
                         Delete
                     </button>
                     
