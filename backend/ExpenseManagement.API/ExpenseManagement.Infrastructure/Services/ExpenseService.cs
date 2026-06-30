@@ -309,11 +309,6 @@ namespace ExpenseManagement.Infrastructure.Services
                 return null;
             }
 
-            if(expense.UserId != userId)
-            {
-                throw new UnauthorizedAccessException("You can only upload receipts your own expenses ");
-            }
-
             if (!string.IsNullOrEmpty(expense.ReceiptPath))
             {
                 var oldFilePath = Path.Combine(_uploadPath, expense.ReceiptPath);

@@ -81,7 +81,7 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOrManager", policy => policy.RequireRole("Admin", "Manager"))
     .AddPolicy("AdminOrEmployee", policy => policy.RequireRole("Admin", "Employee"))
     .AddPolicy("ManagerOrEmployee", policy => policy.RequireRole("Manager", "Employee"))
-    .AddPolicy("AdminManagerEmployee", policy => policy.RequireRole("Admin", "Manager", "Employee"));
+    .AddPolicy("All", policy => policy.RequireRole("Admin", "Manager", "Employee"));
 
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>

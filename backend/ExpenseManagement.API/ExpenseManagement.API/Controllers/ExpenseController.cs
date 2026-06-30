@@ -21,7 +21,7 @@ namespace ExpenseManagement.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "AdminOrManager")]
+        [Authorize(Policy = "All")]
         public async Task<IActionResult> GetAllExpenses(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
@@ -133,28 +133,23 @@ namespace ExpenseManagement.API.Controllers
                 return BadRequest("No file uploaded.");
             }
 
-            // Validate file type
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
             var fileExtension = Path.GetExtension(receipt.FileName).ToLowerInvariant();
-            
             if (!allowedExtensions.Contains(fileExtension))
             {
                 return BadRequest("Invalid file type. Only JPG, JPEG, PNG, and PDF files are allowed.");
             }
-            // Validate file size  max 5MB
+
             if (receipt.Length > 5 * 1024 * 1024)
             {
                 return BadRequest("File size exceeds the limit of 5MB.");
             }
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-
-
             var result = await _expenseService.UploadReceiptAsync(id, receipt.OpenReadStream(), receipt.FileName, userId);
             if (result == null)
             {
-                return NotFound($"Expense with ID {id} not found or failed to upload receipt.");
+                return NotFound($"Expense with ID {id} not found.");
             }
             return CreatedAtAction(nameof(GetExpenseById), new { id = id }, new { receiptPath = result });
         }
@@ -206,7 +201,7 @@ namespace ExpenseManagement.API.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Forbid();
+                return Forbid(ex.Message);
             }
             catch (InvalidOperationException ex)
             {
