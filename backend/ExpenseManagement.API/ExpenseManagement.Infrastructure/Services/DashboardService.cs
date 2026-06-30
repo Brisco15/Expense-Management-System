@@ -19,21 +19,54 @@ namespace ExpenseManagement.Infrastructure.Services
 
         public async Task<DashboardSummaryDto> GetDashboardSummaryAsync()
         {
-           
+            var now = DateTime.UtcNow;
+
+            var recentExpenses = await _context.Expenses
+                .OrderByDescending(e => e.CreatedAt)
+                .Take(5)
+                .Select(e => new RecentExpenseItem
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Amount = e.Amount,
+                    Category = e.Category!.Name,
+                    Status = e.Status.ToString(),
+                    ExpenseDate = e.ExpenseDate,
+                    CreatedBy = e.User!.FullName
+                })
+                .ToListAsync();
+
             return new DashboardSummaryDto
             {
-                TotalExpenses =  await _context.Expenses.SumAsync(e => e.Amount),
+                TotalExpenses = await _context.Expenses.SumAsync(e => e.Amount),
+
+                TotalExpensesThisMonth = await _context.Expenses
+                    .Where(e => e.ExpenseDate.Year == now.Year && e.ExpenseDate.Month == now.Month)
+                    .SumAsync(e => e.Amount),
+
+                TotalExpensesThisYear = await _context.Expenses
+                    .Where(e => e.ExpenseDate.Year == now.Year)
+                    .SumAsync(e => e.Amount),
 
                 TotalExpenseCount = await _context.Expenses.CountAsync(),
 
                 ApprovedExpenses = await _context.Expenses
-                                    .Where(e => e.Status == ExpenseStatus.Approved)
-                                    .SumAsync(e => e.Amount),
+                    .Where(e => e.Status == ExpenseStatus.Approved)
+                    .SumAsync(e => e.Amount),
 
                 PendingExpenses = await _context.Expenses
-                                    .Where(e => e.Status == ExpenseStatus.Pending)
-                                    .SumAsync(e => e.Amount)
+                    .Where(e => e.Status == ExpenseStatus.Pending)
+                    .SumAsync(e => e.Amount),
 
+                RejectedExpenses = await _context.Expenses
+                    .Where(e => e.Status == ExpenseStatus.Rejected)
+                    .SumAsync(e => e.Amount),
+
+                RejectedExpenseCount = await _context.Expenses
+                    .Where(e => e.Status == ExpenseStatus.Rejected)
+                    .CountAsync(),
+
+                RecentExpenses = recentExpenses
             };
         }
 
@@ -53,14 +86,18 @@ namespace ExpenseManagement.Infrastructure.Services
 
         public async Task<List<CategoryExpenseDto>> GetCategoryExpensesAsync()
         {
-            return await _context.Expenses
-                .Include(e => e.Category)
-                .GroupBy(e => e.Category!.Name)
-                .Select(g => new CategoryExpenseDto
+            return await _context.Categories
+                .Where(c => c.IsActive)
+                .Select(c => new CategoryExpenseDto
                 {
-                    CategoryName = g.Key,
-                    TotalAmount = g.Sum(e => e.Amount)
-                }).ToListAsync();
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    MonthlyBudget = c.MonthlyBudget,
+                    YearlyBudget = c.YearlyBudget,
+                    TotalAmount = c.Expenses.Sum(e => e.Amount),
+                    TotalExpenses = c.Expenses.Count()
+                })
+                .ToListAsync();
         }
     }
 }
