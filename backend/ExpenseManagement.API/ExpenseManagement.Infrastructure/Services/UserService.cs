@@ -81,6 +81,8 @@ namespace ExpenseManagement.Infrastructure.Services
                 return true;
 
             user.Role = role;
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
             user.UpdatedAt = DateTime.UtcNow;
 
             try

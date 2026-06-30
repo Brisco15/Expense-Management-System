@@ -1,6 +1,4 @@
-﻿
-
-namespace ExpenseManagement.Application.DTOs
+﻿namespace ExpenseManagement.Application.DTOs
 {
     public class DashboardSummaryDto
     {
