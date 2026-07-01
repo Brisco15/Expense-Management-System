@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend/expense-management-ui
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Build Angular app
         working-directory: frontend/expense-management-ui
