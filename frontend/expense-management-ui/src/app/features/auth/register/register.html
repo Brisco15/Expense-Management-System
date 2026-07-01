@@ -29,7 +29,7 @@
 
              </mat-form-field>
             <!-- Password Field -->
-             <mat-form-field appearance="outline">
+             <mat-form-field appearance="outline" class="password-field">
                 <mat-label>Password</mat-label>
                 <input matInput 
                   [type]= "hidePassword() ? 'password' : 'text'" 
@@ -45,7 +45,7 @@
                   <mat-error *ngIf= "registerForm.controls.password.touched && registerForm.controls.password.invalid">
                       Please enter a valid password
                   </mat-error>
-                  <mat-hint *ngIf= "registerForm.controls.password.dirty">
+                  <mat-hint [style.visibility]="registerForm.controls.password.dirty ? 'visible' : 'hidden'">
                         Enter a password with at least 8 characters, min 1 uppercase letter, 1 lowercase letter, 1 digit and 1 special character
                   </mat-hint>
 

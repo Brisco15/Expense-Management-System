@@ -52,6 +52,11 @@ mat-form-field {
   width: 100%;
 }
 
+.password-field {
+
+  margin-bottom: 1.25rem;
+}
+
 .register-button {
 
   height: 48px;
