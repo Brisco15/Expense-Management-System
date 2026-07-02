@@ -81,9 +81,11 @@ table {
 }
 
 /* Header cells */
-mat-mdc-header-cell {
+.mat-mdc-header-cell {
   font-weight: 600;
   font-size: 0.8rem;
+  text-align: center;
+  justify-content: center;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--shell-text-muted);
@@ -95,12 +97,14 @@ mat-mdc-header-cell {
   font-size: 0.9rem;
   padding-top: 12px;
   padding-bottom: 12px;
+  text-align: center;
 }
+
 
 /* Budget values — highlight */
 .mat-mdc-cell.budget-cell {
-  font-weight: 500;
-  color: var(--primary-color, #6366f1);
+  font-weight: 800;
+  color: var(--primary-color,  #1e293b);
 }
 
 /* Status badges */
@@ -138,6 +142,7 @@ mat-mdc-header-cell {
   padding: 0 12px;
   height: 32px;
   line-height: 32px;
+  white-space: nowrap;
 }
 
 .btn-edit{
@@ -185,4 +190,70 @@ mat-mdc-header-cell {
 
 .btn-deactivate:hover {
   background-color: #4f46e5 !important;
+}
+
+
+@media (max-width: 1280px) {
+  .table-container {
+    padding: 16px;
+  }
+
+  ::ng-deep .mat-mdc-header-cell,
+  ::ng-deep .mat-mdc-cell {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    font-size: 0.78rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .action-buttons button {
+    font-size: 0.70rem;
+    padding: 0 6px;
+    height: 26px;
+    line-height: 26px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 6px;
+  }
+
+  .new-category-container {
+    margin-left: 0;
+  }
+
+  .new-category-container button {
+    width: 100%;
+  }
+
+  .table-container {
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  ::ng-deep .mat-mdc-header-cell,
+  ::ng-deep .mat-mdc-cell {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    font-size: 0.72rem;
+  }
+
+  .action-buttons button {
+    font-size: 0.68rem;
+    height: 24px;
+    line-height: 24px;
+  }
 }

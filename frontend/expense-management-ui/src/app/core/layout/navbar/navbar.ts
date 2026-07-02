@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { AuthService } from '../../services/auth';
 import { ThemeService } from '../../services/theme';
+import { SidenavService } from '../../services/sidenav';
 
 
 @Component({
@@ -13,10 +14,10 @@ import { ThemeService } from '../../services/theme';
 })
 export class Navbar {
 
+  public sidenavService = inject(SidenavService);
+
   constructor(
     public authService: AuthService,
-    
-
     private router: Router,
     public themeService: ThemeService
   ){}

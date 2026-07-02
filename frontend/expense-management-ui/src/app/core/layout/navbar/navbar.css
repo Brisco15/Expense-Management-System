@@ -2,6 +2,18 @@
   flex: 1;
 }
 
+
+.burger-btn {
+  display: none;
+  margin-right: 4px;
+}
+
+@media (max-width: 1280px) {
+  .burger-btn {
+    display: inline-flex;
+  }
+}
+
 mat-toolbar {
   background: var(--shell-bg) !important;
   color: var(--shell-text) !important;
