@@ -14,8 +14,10 @@
 
     </button>
 
-    <button mat-button [mat-menu-trigger-for]="userMenu" >
-        {{ authService.user()?.role }} | {{ authService.user()?.email }}
+    <button mat-button [mat-menu-trigger-for]="userMenu" class="user-btn">
+        <span class="user-role">{{ authService.user()?.role }}</span>
+        <span class="user-separator"> | </span>
+        <span class="user-email">{{ authService.user()?.email }}</span>
         <mat-icon>arrow_drop_down</mat-icon>
     </button>
 

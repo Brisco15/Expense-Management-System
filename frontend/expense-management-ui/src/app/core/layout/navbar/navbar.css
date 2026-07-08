@@ -49,3 +49,61 @@ mat-toolbar mat-icon {
   color: var(--shell-text-muted) !important;
   font-size: 18px;
 }
+
+.user-btn {
+  max-width: 280px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.user-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 200px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  mat-toolbar {
+    padding: 0 12px;
+  }
+
+  .user-btn {
+    max-width: 180px;
+    padding: 0 8px !important;
+    font-size: 0.8rem;
+  }
+
+  .user-role,
+  .user-separator {
+    display: none;
+  }
+
+  .user-email {
+    max-width: 130px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  mat-toolbar {
+    padding: 0 6px;
+  }
+
+  mat-toolbar span:first-child {
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+  }
+
+  .user-btn {
+    max-width: 120px;
+    font-size: 0.75rem;
+  }
+
+  .user-email {
+    max-width: 85px;
+  }
+}
